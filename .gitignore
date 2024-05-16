@@ -2,3 +2,5 @@ node_modules
 
 packages/api/.env
 packages/api/drizzle
+
+next-env.d.ts
