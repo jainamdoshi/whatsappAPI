@@ -1,11 +1,11 @@
 import express from 'express';
+import bodyParser from 'body-parser';
+import whatsAppRouter from './routes/whatsapp';
 
-const app = express();
+const app = express().use(bodyParser.json());
 const port = 3000;
 
-app.get('/', (req, res) => {
-	res.send('Hello, TypeScript with Express!');
-});
+app.use('/whatsapp', whatsAppRouter);
 
 app.listen(port, () => {
 	console.log(`Server is running on http://localhost:${port}`);
