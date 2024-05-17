@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import whatsAppRouter from './routes/whatsapp';
 import { getDB } from './config/database';
-import { User, users } from './db/schema/users';
+import { User, users } from './model/db/schema/users';
 import { PORT } from './config/init';
 
 const app = express().use(bodyParser.json());
