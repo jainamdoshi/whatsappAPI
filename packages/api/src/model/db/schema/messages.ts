@@ -3,7 +3,9 @@ import { users } from './users';
 
 export const messages = pgTable('messages', {
 	id: serial('id').primaryKey(),
-	userId: integer('user_id').references(() => users.id),
+	userId: integer('user_id')
+		.references(() => users.id)
+		.notNull(),
 	timestamp: timestamp('timestamp').notNull(),
 	message: json('message').notNull()
 });

@@ -6,7 +6,9 @@
 	"scripts": {
 		"start": "ts-node src/index.ts",
 		"drizzle-migrate": "drizzle-kit migrate",
+		"drizzle-generate": "drizzle-kit generate",
 		"drizzle-push": "drizzle-kit push",
+		"drizzle-introspect": "drizzle-kit introspect",
 		"drizzle-studio": "drizzle-kit studio --port 3001 --verbose",
 		"ngrok": "ngrok http --domain=ethical-monarch-set.ngrok-free.app 8080",
 		"test": "test"

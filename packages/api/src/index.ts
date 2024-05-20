@@ -4,10 +4,14 @@ import whatsAppRouter from './routes/whatsapp';
 import { getDB } from './config/database';
 import { User, users } from './model/db/schema/users';
 import { PORT } from './config/init';
+import messageRouter from './routes/message';
+import userRouter from './routes/user';
 
 const app = express().use(bodyParser.json());
 
 app.use('/whatsapp', whatsAppRouter);
+app.use('/user', userRouter);
+app.use('/message', messageRouter);
 
 app.listen(PORT, async () => {
 	const db = await getDB();
