@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { Request, Response } from 'express';
 import { WHATSAPP_VERIFY_TOKEN } from '../config/init';
-import { EventNotification } from '../model/eventNotification';
+import { WhatsAppEventNotification } from '../model/eventNotification';
+import { NewOutgoingMessages } from '../model/db/schema/outgoingMessages';
 
 const whatsAppRouter = Router();
 
@@ -21,7 +22,7 @@ async function verifyingRequest(req: Request, res: Response) {
 	return res.status(403).send('Forbidden');
 }
 
-async function eventNotification(req: Request<any, any, EventNotification>, res: Response) {
+async function eventNotification(req: Request<any, any, WhatsAppEventNotification>, res: Response) {
 	const events = req.body;
 	console.log(JSON.stringify(events.entry));
 	return res.status(200).send('EVENT_RECEIVED');

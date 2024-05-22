@@ -1,34 +1,129 @@
-export class EventNotification {
-	entry: EventEntry[];
+export class WhatsAppEventNotification {
+	entry: WhatsAppEventEntry[];
 	object: string;
 
-	constructor(entry: EventEntry[], object: string) {
+	constructor(entry: WhatsAppEventEntry[], object: string) {
 		this.entry = entry;
 		this.object = object;
 	}
 }
 
-class EventEntry {
+class WhatsAppEventEntry {
 	uid: string;
 	time: number;
-	changes: EventChange[];
+	changes: WhatsAppEventChange[];
 
-	constructor(uid: string, time: number, changes: EventChange[]) {
+	constructor(uid: string, time: number, changes: WhatsAppEventChange[]) {
 		this.uid = uid;
 		this.time = time;
 		this.changes = changes;
 	}
 }
 
-class EventChange {
-	value: any;
+type WhatsAppEventChangeValue = {
+	messaging_product: string;
+	metadata: WhatsAppMetadataChange;
+	contacts?: WhatsAppContact[];
+	messages?: WhatsAppMessage[];
+	statuses?: WhatsAppStatus[];
+};
+
+class WhatsAppEventChange {
+	value: WhatsAppEventChangeValue;
 	field: string;
 
-	constructor(value: any, field: string) {
+	constructor(value: WhatsAppEventChangeValue, field: string) {
 		this.value = value;
 		this.field = field;
 	}
 }
+
+class WhatsAppMetadataChange {
+	displayPhoneNumber: string;
+	phoneNumberId: string;
+
+	constructor(displayPhoneNumber: string, phoneNumberId: string) {
+		this.displayPhoneNumber = displayPhoneNumber;
+		this.phoneNumberId = phoneNumberId;
+	}
+}
+
+class WhatsAppContact {
+	profile: {
+		name: string;
+	};
+	waId: string;
+
+	constructor(profile: { name: string }, waId: string) {
+		this.profile = profile;
+		this.waId = waId;
+	}
+}
+
+export class WhatsAppMessage {
+	from: string;
+	timestamp: string;
+	text: {
+		body: string;
+	};
+	type: string;
+
+	constructor(from: string, timestamp: string, text: { body: string }, type: string) {
+		this.from = from;
+		this.timestamp = timestamp;
+		this.text = text;
+		this.type = type;
+	}
+}
+
+class WhatsAppStatus {
+	id: string;
+	status: string;
+	timestamp: string;
+	recipientId: string;
+	conversationId: string;
+
+	constructor(id: string, status: string, timestamp: string, recipientId: string, conversation: { id: string }) {
+		this.id = id;
+		this.status = status;
+		this.timestamp = timestamp;
+		this.recipientId = recipientId;
+		this.conversationId = conversation.id;
+	}
+}
+
+// {
+// 	"id": "168130179724730",
+// 	"changes": [
+// 	{
+// 		"value": {
+// 		"messaging_product": "whatsapp",
+// 		"metadata": {
+// 			"display_phone_number": "15550315353",
+// 			"phone_number_id": "186646801200517"
+// 		},
+// 		"statuses": [
+// 			{
+// 			"id": "wamid.HBgMOTcxNTU5OTgxODY0FQIAERgSMDVDMzkzREJBQkYxNTQwOTNDAA==",
+// 			"status": "delivered",
+// 			"timestamp": "1716308169",
+// 			"recipient_id": "971559981864",
+// 			"conversation": {
+// 				"id": "158e8778a20f301f0b0382bf9cb4696b",
+// 				"origin": {
+// 				"type": "utility"
+// 				}
+// 			},
+// 			"pricing": {
+// 				"billable": true,
+// 				"pricing_model": "CBP",
+// 				"category": "utility"
+// 			}}
+// 		]
+// 		},
+// 		"field": "messages"
+// 	}]
+// }
 
 // [
 //   {
