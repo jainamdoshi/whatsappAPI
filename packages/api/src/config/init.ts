@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const WHATSAPP_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || '';
+export const WHATSAPP_USER_ACCESS_TOKEN = process.env.WHATSAPP_USER_ACCESS_TOKEN || '';
+export const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '';
 
 export const PORT = parseInt(process.env.PORT as string) || 8080;
 
