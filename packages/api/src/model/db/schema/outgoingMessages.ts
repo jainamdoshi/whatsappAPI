@@ -1,13 +1,10 @@
 import { integer, json, pgTable, serial, timestamp } from 'drizzle-orm/pg-core';
-import { users } from './users';
+import { conversation } from './conversations';
 
 export const outgoingMessages = pgTable('outgoing_messages', {
 	id: serial('id').primaryKey(),
-	fromUserId: integer('from_user_id')
-		.references(() => users.id)
-		.notNull(),
-	toUserId: integer('to_user_id')
-		.references(() => users.id)
+	conversationId: integer('conversation_id')
+		.references(() => conversation.id)
 		.notNull(),
 	sentTimestamp: timestamp('sent_timestamp').notNull(),
 	deliveredTimestamp: timestamp('delivered_timestamp'),
