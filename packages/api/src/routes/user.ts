@@ -14,7 +14,10 @@ async function getUsers(_: Request, res: Response<User[]>) {
 
 async function newUser(req: Request<any, any, NewUser>, res: Response<User | string>) {
 	const user = req.body;
-	user.phoneNumber = user.phoneNumber.toString();
+
+	if (!user) {
+		return res.status(400).send('No user data provided');
+	}
 
 	try {
 		const newUser = await addUser(user);
