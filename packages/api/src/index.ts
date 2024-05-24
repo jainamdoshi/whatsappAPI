@@ -1,11 +1,14 @@
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
 import { PORT } from './config/init';
 import messageRouter from './routes/message';
 import userRouter from './routes/user';
 import whatsAppRouter from './routes/whatsapp';
 
-const app = express().use(bodyParser.json());
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
 
 app.use('/whatsapp', whatsAppRouter);
 app.use('/user', userRouter);
