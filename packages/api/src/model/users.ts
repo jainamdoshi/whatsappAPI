@@ -20,13 +20,6 @@ export async function getUsers<T extends typeof users>(options?: {
 	filter?: FilterCriteria<T>;
 }) {
 	const db = await getDB();
-
-	// const where = filterCriteriaBuilder(users, options?.filter);
-	// return await db
-	// 	// .select(options?.select || {})
-	// 	.select()
-	// 	.from(users)
-	// 	.where(where);
 	let sql;
 
 	if (options?.select) {

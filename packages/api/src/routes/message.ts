@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { IncomingMessages, NewIncomingMessages } from '../model/db/schema/incomingMessages';
 import { User } from '../model/db/schema/users';
-import { addIncomingMessage, getIncomingMessages } from '../model/messages';
-import { addUser, getUser, isUserExist } from '../model/users';
+import { getIncomingMessages } from '../model/messages';
+import { addUser, isUserExist } from '../model/users';
 
 const messageRouter = Router();
 messageRouter.get('/', getMessages);
@@ -27,7 +27,7 @@ async function newMessage(req: Request<{}, {}, NewMessageReqBody>, res: Response
 		}
 
 		if (!user) {
-			user = await getUser(message.phoneNumber);
+			// user = await getUser(message.phoneNumber);
 		}
 
 		// const newMessage = await addIncomingMessage({ ...message, userId: user!.id });

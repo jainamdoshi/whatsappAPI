@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { NewUser, User } from '../model/db/schema/users';
-import { addUser, getAllUsers } from '../model/users';
+import { addUser } from '../model/users';
 
 const userRouter = Router();
 
@@ -8,8 +8,8 @@ userRouter.get('/', getUsers);
 userRouter.post('/', newUser);
 
 async function getUsers(_: Request, res: Response<User[]>) {
-	const allUsers = await getAllUsers();
-	return res.status(200).send(allUsers);
+	// const allUsers = await getAllUsers();
+	// return res.status(200).send(allUsers);
 }
 
 async function newUser(req: Request<any, any, NewUser>, res: Response<User | string>) {

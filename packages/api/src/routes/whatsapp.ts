@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { Request, Response } from 'express';
+import { Request, Response, Router } from 'express';
 import { WHATSAPP_VERIFY_TOKEN } from '../config/init';
-import { WhatsAppEventNotification } from '../model/eventNotification';
+import { sendMessageToUsers } from '../lib/messages';
 import { NewOutgoingMessages } from '../model/db/schema/outgoingMessages';
+import { WhatsAppEventNotification } from '../model/eventNotification';
 
 const whatsAppRouter = Router();
 
@@ -24,13 +24,27 @@ async function verifyingRequest(req: Request, res: Response) {
 
 async function eventNotification(req: Request<any, any, WhatsAppEventNotification>, res: Response) {
 	const events = req.body;
-	console.log(JSON.stringify(events.entry));
+	const messages = events.entry;
+	console.log(JSON.stringify(messages));
 	return res.status(200).send('EVENT_RECEIVED');
 }
 
-async function sendMessage(req: Request, res: Response) {
-	const { recipient, message } = req.body;
-	console.log(`Recipient: ${recipient}, Message: ${message}`);
+async function sendMessage(
+	req: Request<any, any, { phoneNumbers: string[]; templateName: string }>,
+	res: Response<NewOutgoingMessages | string>
+) {
+	const phoneNumbers = req.body.phoneNumbers || [];
+	const templateName = req.body.templateName || '';
+
+	console.log(phoneNumbers, templateName);
+
+	try {
+		const result = await sendMessageToUsers(phoneNumbers, templateName);
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send('Error sending message');
+	}
+
 	return res.status(200).send('Message sent');
 }
 
