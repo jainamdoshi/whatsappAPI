@@ -23,7 +23,7 @@ async function newMessage(req: Request<{}, {}, NewMessageReqBody>, res: Response
 
 	try {
 		if (!(await isUserExist(message.phoneNumber))) {
-			user = await addUser({ phoneNumber: message.phoneNumber });
+			// user = await addUser({ phoneNumber: message.phoneNumber });
 		}
 
 		if (!user) {

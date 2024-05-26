@@ -1,9 +1,9 @@
-import { integer, json, pgTable, serial, timestamp } from 'drizzle-orm/pg-core';
+import { char, json, pgTable, serial, timestamp } from 'drizzle-orm/pg-core';
 import { conversation } from './conversations';
 
 export const incomingMessages = pgTable('incoming_messages', {
 	id: serial('id').primaryKey(),
-	conversationId: integer('conversation_id')
+	conversationId: char('conversation_id', { length: 32 })
 		.references(() => conversation.id)
 		.notNull(),
 	timestamp: timestamp('timestamp').notNull(),
