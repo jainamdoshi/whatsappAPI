@@ -8,7 +8,7 @@ userRouter.get('/', getUsersHandler);
 userRouter.post('/', newUser);
 
 async function getUsersHandler(req: Request<any, any, any, { group: number }>, res: Response<User[]>) {
-	const options = req.params.group ? { user_group: req.params.group } : {};
+	const options = req.params.group ? { user_group: req.query.group } : {};
 
 	const allUsers = await getUsers(options);
 	return res.status(200).send(allUsers);
