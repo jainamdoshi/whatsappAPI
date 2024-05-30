@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { WHATSAPP_VERIFY_TOKEN } from '../config/init';
 import { sendMessageToUsers } from '../lib/messages';
-import { NewOutgoingMessages } from '../model/db/schema/outgoingMessages';
+import { NewOutgoingMessage } from '../model/db/schema/outgoingMessages';
 import { WhatsAppEventNotification } from '../model/eventNotification';
 
 const whatsAppRouter = Router();
@@ -31,7 +31,7 @@ async function eventNotification(req: Request<any, any, WhatsAppEventNotificatio
 
 async function sendMessage(
 	req: Request<any, any, { phoneNumbers: string[]; templateName: string }>,
-	res: Response<NewOutgoingMessages | string>
+	res: Response<NewOutgoingMessage | string>
 ) {
 	const phoneNumbers = req.body.phoneNumbers || [];
 	const templateName = req.body.templateName || '';
