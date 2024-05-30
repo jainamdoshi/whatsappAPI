@@ -8,15 +8,10 @@ userRouter.get('/', getUsersHandler);
 userRouter.post('/', newUser);
 
 async function getUsersHandler(req: Request<any, any, any, { group: number }>, res: Response<User[]>) {
-	// if (req.query.group) {
-	// const users = await getUsers();
-	// return res.status(200).send(users);
-	// }
+	const options = req.params.group ? { user_group: req.params.group } : {};
 
-	const allUsers = await getUsers();
-	console.log(allUsers);
-	// return res.status(200).send(allUsers);
-	return res.status(200);
+	const allUsers = await getUsers(options);
+	return res.status(200).send(allUsers);
 }
 
 async function newUser(req: Request<any, any, NewUser>, res: Response<User | string>) {
