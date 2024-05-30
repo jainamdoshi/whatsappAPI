@@ -4,22 +4,22 @@ import { User } from '../model/db/schema/users';
 import { getUsers } from '../model/users';
 
 export async function sendMessageToUsers(phoneNumbers: string[], templateName: string) {
-	if (!phoneNumbers.length || !templateName) {
-		return null;
-	}
+	// if (!phoneNumbers.length || !templateName) {
+	// 	return null;
+	// }
 
-	const users = await getUsers({
-		filter: {
-			phoneNumber: phoneNumbers
-		}
-	});
+	// const users = await getUsers({
+	// 	filter: {
+	// 		phoneNumber: phoneNumbers
+	// 	}
+	// });
 
-	const results = await Promise.all(
-		users.map((user) => {
-			return sendMessage(user, templateName);
-		})
-	);
-	return results;
+	// const results = await Promise.all(
+	// 	users.map((user) => {
+	// 		return sendMessage(user, templateName);
+	// 	})
+	// );
+	// return results;
 }
 
 export async function sendMessage(user: User, templateName: string) {
