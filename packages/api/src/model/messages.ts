@@ -1,27 +1,27 @@
 import { getDB } from '../config/database';
-import { IncomingMessages, incomingMessages, NewIncomingMessages } from './db/schema/incomingMessages';
-import { OutgoingMessages, outgoingMessages } from './db/schema/outgoingMessages';
+import { IncomingMessage, incomingMessages, NewIncomingMessage } from './db/schema/incomingMessages';
+import { OutgoingMessage, outgoingMessages } from './db/schema/outgoingMessages';
 
 export type MessagesType = 'incoming' | 'outgoing';
 
-export async function addIncomingMessage(message: NewIncomingMessages): Promise<IncomingMessages> {
+export async function addIncomingMessage(message: NewIncomingMessage): Promise<IncomingMessage> {
 	const db = await getDB();
 	const res = await db.insert(incomingMessages).values(message).returning();
 	return res[0];
 }
 
-export async function addOutgoingMessage(message: OutgoingMessages): Promise<OutgoingMessages> {
+export async function addOutgoingMessage(message: OutgoingMessage): Promise<OutgoingMessage> {
 	const db = await getDB();
 	const res = await db.insert(outgoingMessages).values(message).returning();
 	return res[0];
 }
 
-export async function getIncomingMessages(): Promise<IncomingMessages[]> {
+export async function getIncomingMessages(): Promise<IncomingMessage[]> {
 	const db = await getDB();
 	return await db.select().from(incomingMessages);
 }
 
-export async function getOutgoingMessages(): Promise<OutgoingMessages[]> {
+export async function getOutgoingMessages(): Promise<OutgoingMessage[]> {
 	const db = await getDB();
 	return await db.select().from(outgoingMessages);
 }
