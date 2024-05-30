@@ -1,21 +1,21 @@
 import { Request, Response, Router } from 'express';
-import { IncomingMessages, NewIncomingMessages } from '../model/db/schema/incomingMessages';
 import { User } from '../model/db/schema/users';
 import { getIncomingMessages } from '../model/messages';
-import { addUser, isUserExist } from '../model/users';
+import { isUserExist } from '../model/users';
+import { IncomingMessage, NewIncomingMessage } from '../model/db/schema/incomingMessages';
 
 const messageRouter = Router();
 messageRouter.get('/', getMessages);
 messageRouter.post('/', newMessage);
 
-type NewMessageReqBody = NewIncomingMessages & { phoneNumber: string };
+type NewMessageReqBody = NewIncomingMessage & { phoneNumber: string };
 
-async function getMessages(_: Request, res: Response<IncomingMessages[]>) {
+async function getMessages(_: Request, res: Response<IncomingMessage[]>) {
 	const messages = await getIncomingMessages();
 	return res.status(200).send(messages);
 }
 
-async function newMessage(req: Request<{}, {}, NewMessageReqBody>, res: Response<IncomingMessages | string>) {
+async function newMessage(req: Request<{}, {}, NewMessageReqBody>, res: Response<IncomingMessage | string>) {
 	const message = req.body;
 	message.timestamp = new Date(message.timestamp);
 
