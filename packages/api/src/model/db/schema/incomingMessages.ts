@@ -10,5 +10,5 @@ export const incomingMessages = pgTable('incoming_messages', {
 	message: json('message').notNull()
 });
 
-export type IncomingMessages = typeof incomingMessages.$inferSelect;
-export type NewIncomingMessages = typeof incomingMessages.$inferInsert;
+export type IncomingMessage = typeof incomingMessages.$inferSelect;
+export type NewIncomingMessage = typeof incomingMessages.$inferInsert;

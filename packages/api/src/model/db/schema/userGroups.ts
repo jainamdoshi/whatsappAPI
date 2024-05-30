@@ -19,5 +19,5 @@ export const userGroups = pgTable(
 	}
 );
 
-export type UserGroups = typeof userGroups.$inferSelect;
-export type NewUserGroups = typeof userGroups.$inferInsert;
+export type UserGroup = typeof userGroups.$inferSelect;
+export type NewUserGroup = typeof userGroups.$inferInsert;
