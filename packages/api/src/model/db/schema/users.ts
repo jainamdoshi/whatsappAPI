@@ -2,7 +2,7 @@ import { pgTable, serial, varchar } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
 	id: serial('id').primaryKey(),
-	name: varchar('name', { length: 100 }).notNull(),
+	name: varchar('name', { length: 256 }).notNull(),
 	phoneNumber: varchar('phone_number', { length: 15 }).notNull().unique()
 });
 
