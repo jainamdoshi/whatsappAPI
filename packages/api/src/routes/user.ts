@@ -12,7 +12,16 @@ userRouter.get('/', getUsersHandler);
 userRouter.post('/', newUser);
 userRouter.post('/load', loadUser);
 
-async function getUsersHandler(req: Request<{}, {}, {}, { group: number }>, res: Response<User[]>) {
+type GetUsersQuery = {
+	group?: number;
+};
+
+type LoadUserBody = {
+	fileName: string;
+	groupName: string;
+};
+
+async function getUsersHandler(req: Request<{}, {}, {}, GetUsersQuery>, res: Response<User[]>) {
 	const options = req.query.group ? { user_group: req.query.group } : {};
 
 	const allUsers = await getUsers(options);
@@ -35,7 +44,7 @@ async function newUser(req: Request<{}, {}, NewUser>, res: Response<User | strin
 	}
 }
 
-async function loadUser(req: Request<{}, {}, { fileName: string; groupName: string }, {}>, res: Response) {
+async function loadUser(req: Request<{}, {}, LoadUserBody, {}>, res: Response) {
 	const data: RawUserData[] = await loadUserDataFromCSV(req.body.fileName);
 	let group: Group = (await getGroup({ filter: { name: [req.body.groupName] } }))[0];
 
