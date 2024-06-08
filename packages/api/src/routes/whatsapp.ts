@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { WHATSAPP_VERIFY_TOKEN } from '../config/init';
-import { sendMessageToUsers } from '../lib/messages';
+import { sendMessageToContacts } from '../lib/messages';
 import { NewOutgoingMessage } from '../model/db/schema/outgoingMessages';
 import { WhatsAppEventNotification } from '../model/eventNotification';
 
@@ -39,7 +39,7 @@ async function sendMessage(
 	console.log(phoneNumbers, templateName);
 
 	try {
-		const result = await sendMessageToUsers(phoneNumbers, templateName);
+		const result = await sendMessageToContacts(phoneNumbers, templateName);
 	} catch (error) {
 		console.log(error);
 		return res.status(500).send('Error sending message');

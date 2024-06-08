@@ -1,3 +1,3 @@
 export default function Component() {
-	return <div>Users</div>;
+	return <div>Contacts</div>;
 }

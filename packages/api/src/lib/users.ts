@@ -1,38 +1,41 @@
 import { Group } from '../model/db/schema/groups';
-import { UserGroup } from '../model/db/schema/userGroups';
-import { User } from '../model/db/schema/users';
-import { addGroup, addUserGroup, getGroup, getUserGroups } from '../model/groups';
-import { addUser, getUsers } from '../model/users';
-import { RawUserData } from './csvLoader';
+import { ContactGroup } from '../model/db/schema/userGroups';
+import { Contact } from '../model/db/schema/users';
+import { addGroup, addContactGroup, getGroup, getContactGroups } from '../model/groups';
+import { addContact, getContacts } from '../model/users';
+import { RawContactData } from './csvLoader';
 
-export async function parseRawUserData(users: RawUserData[], groupId: number) {
-	const allUsers: User[] = await getUsers();
+export async function parseRawContactData(contacts: RawContactData[], groupId: number) {
+	const allContacts: Contact[] = await getContacts();
 	const allGroups: Group[] = await getGroup({ filter: { parentGroupId: [groupId] } });
-	const allUserGroups: UserGroup[] = await getUserGroups();
-	const results: User[] = [];
+	const allContactGroups: ContactGroup[] = await getContactGroups();
+	const results: Contact[] = [];
 
-	for (const user of users) {
-		let existingUser = allUsers.find((u) => u.phoneNumber == user.phoneNumber);
-		if (!existingUser) {
-			existingUser = await addUser({ name: user.name || user.phoneNumber, phoneNumber: user.phoneNumber });
-			allUsers.push(existingUser);
+	for (const contact of contacts) {
+		let existingContact = allContacts.find((u) => u.phoneNumber == contact.phoneNumber);
+		if (!existingContact) {
+			existingContact = await addContact({
+				name: contact.name || contact.phoneNumber,
+				phoneNumber: contact.phoneNumber
+			});
+			allContacts.push(existingContact);
 		}
 
-		let existingCountryGroup = allGroups.find((g) => g.name == user.country && g.parentGroupId == groupId);
-		if (!existingCountryGroup && user.country) {
-			existingCountryGroup = await addGroup({ name: user.country, parentGroupId: groupId });
+		let existingCountryGroup = allGroups.find((g) => g.name == contact.country && g.parentGroupId == groupId);
+		if (!existingCountryGroup && contact.country) {
+			existingCountryGroup = await addGroup({ name: contact.country, parentGroupId: groupId });
 			allGroups.push(existingCountryGroup);
 		}
 
-		let existingUserGroup = allUserGroups.find(
-			(ug) => ug.userId == existingUser.id && ug.groupId == (existingCountryGroup?.id || groupId)
+		let existingContactGroup = allContactGroups.find(
+			(ug) => ug.contactId == existingContact.id && ug.groupId == (existingCountryGroup?.id || groupId)
 		);
 
-		if (!existingUserGroup) {
-			existingUserGroup = await addUserGroup(existingUser.id, existingCountryGroup?.id || groupId);
-			allUserGroups.push(existingUserGroup);
+		if (!existingContactGroup) {
+			existingContactGroup = await addContactGroup(existingContact.id, existingCountryGroup?.id || groupId);
+			allContactGroups.push(existingContactGroup);
 		}
-		results.push(existingUser);
+		results.push(existingContact);
 	}
 	return results;
 }

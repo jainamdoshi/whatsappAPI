@@ -1,13 +1,13 @@
 import { char, integer, pgTable } from 'drizzle-orm/pg-core';
-import { users } from './users';
+import { contacts } from './users';
 
 export const conversation = pgTable('conversations', {
 	id: char('id', { length: 32 }).primaryKey(),
-	userId: integer('user_id')
-		.references(() => users.id)
+	contactId: integer('contact_id')
+		.references(() => contacts.id)
 		.notNull(),
-	userId2: integer('user_id2')
-		.references(() => users.id)
+	contactId2: integer('contact_id2')
+		.references(() => contacts.id)
 		.notNull()
 });
 

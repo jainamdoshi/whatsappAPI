@@ -5,6 +5,6 @@ export type Contact = {
 };
 
 export async function getContactsByGroup(groupId: number): Promise<Contact[]> {
-	const response = await fetch(`http://localhost:8080/user?group=${groupId}`);
+	const response = await fetch(`http://localhost:8080/contact?group=${groupId}`);
 	return await response.json();
 }

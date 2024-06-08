@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { FilePenIcon } from 'lucide-react';
 import { useState } from 'react';
 
-export default function GroupUsers({ params }: { params: { groupId: string } }) {
+export default function GroupContacts({ params }: { params: { groupId: string } }) {
 	const groupQuery = useQuery<Group>({
 		queryKey: ['group', params.groupId],
 		queryFn: () => getGroup(params.groupId)

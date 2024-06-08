@@ -3,7 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import { PORT } from './config/init';
 import messageRouter from './routes/message';
-import userRouter from './routes/user';
+import contactRouter from './routes/user';
 import whatsAppRouter from './routes/whatsapp';
 import { groupRouter } from './routes/group';
 
@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use('/whatsapp', whatsAppRouter);
-app.use('/user', userRouter);
+app.use('/contact', contactRouter);
 app.use('/group', groupRouter);
 app.use('/message', messageRouter);
 

@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { IncomingMessage, NewIncomingMessage } from '../model/db/schema/incomingMessages';
-import { User } from '../model/db/schema/users';
+import { Contact } from '../model/db/schema/users';
 import { getIncomingMessages } from '../model/messages';
-import { isUserExist } from '../model/users';
+import { isContactExist } from '../model/users';
 
 const messageRouter = Router();
 messageRouter.get('/', getMessages);
@@ -20,13 +20,13 @@ async function newMessage(req: Request<{}, {}, NewMessageReqBody>, res: Response
 	message.timestamp = new Date(message.timestamp);
 	console.log(JSON.stringify(message));
 
-	let user: User | null = null;
+	let contact: Contact | null = null;
 	try {
-		if (!(await isUserExist(message.phoneNumber))) {
+		if (!(await isContactExist(message.phoneNumber))) {
 			// user = await addUser({ phoneNumber: message.phoneNumber });
 		}
 
-		if (!user) {
+		if (!contact) {
 			// user = await getUser(message.phoneNumber);
 		}
 

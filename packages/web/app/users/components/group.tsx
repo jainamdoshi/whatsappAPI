@@ -6,7 +6,7 @@ export default function ContactGroup({ group }: { group: Group }) {
 	if (!group.subGroup.length) {
 		return (
 			<div className='space-y-1 px-4 py-2'>
-				<Link href={`/users/${group.id}`}>{group.name}</Link>
+				<Link href={`/contacts/${group.id}`}>{group.name}</Link>
 			</div>
 		);
 	}

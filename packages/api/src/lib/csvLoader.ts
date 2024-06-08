@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { parse } from 'csv-parse';
 
-export type RawUserData = {
+export type RawContactData = {
 	status?: string;
 	status2?: string;
 	country?: string;
@@ -12,27 +12,27 @@ export type RawUserData = {
 	email2?: string;
 };
 
-export async function loadUserDataFromCSV(fileName: string) {
-	const users: RawUserData[] = [];
+export async function loadContactDataFromCSV(fileName: string) {
+	const contacts: RawContactData[] = [];
 
 	const columns = ['status', 'status2', 'country', 'name', 'phoneNumber', 'companyName', 'email', 'email2'];
 
 	const data = readFileSync(fileName, 'utf8');
-	const parser = parse(data, {
+	const contactParser = parse(data, {
 		delimiter: ',',
 		columns: columns
 	});
 
-	for await (const user of parser) {
-		if (user.phoneNumber && user.phoneNumber.trim() !== '') {
+	for await (const contact of contactParser) {
+		if (contact.phoneNumber && contact.phoneNumber.trim() !== '') {
 			columns.map((key) => {
-				user[key] = user[key].trim();
-				if (user[key] === '') {
-					delete user[key];
+				contact[key] = contact[key].trim();
+				if (contact[key] === '') {
+					delete contact[key];
 				}
 			});
-			users.push(user);
+			contacts.push(contact);
 		}
 	}
-	return users;
+	return contacts;
 }

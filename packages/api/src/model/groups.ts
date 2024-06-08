@@ -1,7 +1,7 @@
 import { getDB } from '../config/database';
 import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
 import { groups, NewGroup } from './db/schema/groups';
-import { userGroups } from './db/schema/userGroups';
+import { contactGroups } from './db/schema/userGroups';
 
 export async function addGroup(group: NewGroup) {
 	const db = await getDB();
@@ -32,14 +32,14 @@ export async function getGroup<T extends typeof groups>(options?: {
 	return await sql.execute();
 }
 
-export async function addUserGroup(userId: number, groupId: number) {
+export async function addContactGroup(contactId: number, groupId: number) {
 	const db = await getDB();
-	const res = await db.insert(userGroups).values({ userId, groupId }).returning();
+	const res = await db.insert(contactGroups).values({ contactId, groupId }).returning();
 	return res[0];
 }
 
-export async function getUserGroups() {
+export async function getContactGroups() {
 	const db = await getDB();
-	const res = await db.select().from(userGroups).execute();
+	const res = await db.select().from(contactGroups).execute();
 	return res;
 }

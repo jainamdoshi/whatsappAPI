@@ -1,28 +1,28 @@
 import { and, eq } from 'drizzle-orm';
 import { getDB } from '../config/database';
 import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
-import { userGroups } from './db/schema/userGroups';
-import { NewUser, User, users } from './db/schema/users';
+import { ContactGroup, contactGroups } from './db/schema/userGroups';
+import { NewContact, Contact, contacts } from './db/schema/users';
 import { PgSelect } from 'drizzle-orm/pg-core';
+import { Group } from './db/schema/groups';
 
-export async function isUserExist(phoneNumber: string): Promise<boolean> {
+export async function isContactExist(phoneNumber: string): Promise<boolean> {
 	const db = await getDB();
-	const user = await db.select().from(users).where(eq(users.phoneNumber, phoneNumber));
-	return user.length > 0;
+	const contact = await db.select().from(contacts).where(eq(contacts.phoneNumber, phoneNumber));
+	return contact.length > 0;
 }
 
-export async function addUser(user: NewUser): Promise<User> {
+export async function addContact(contact: NewContact): Promise<Contact> {
 	const db = await getDB();
-	const res = await db.insert(users).values(user).returning();
+	const res = await db.insert(contacts).values(contact).returning();
 	return res[0];
 }
 
-export async function getUsers<T extends typeof users>(options?: {
+export async function getContacts<T extends typeof contacts>(options?: {
 	select?: SelectedFields<T>;
 	filter?: FilterCriteria<T>;
-	user_group?: number;
+	contact_group?: number;
 }) {
-
 	const db = await getDB();
 	let sql;
 
@@ -32,24 +32,24 @@ export async function getUsers<T extends typeof users>(options?: {
 		sql = db.select();
 	}
 
-	sql = sql.from(users) as unknown as PgSelect;
+	sql = sql.from(contacts) as unknown as PgSelect;
 
-	if (options?.user_group) {
+	if (options?.contact_group) {
 		sql = sql.innerJoin(
-			userGroups,
-			and(eq(users.id, userGroups.userId), eq(userGroups.groupId, options?.user_group))
+			contactGroups,
+			and(eq(contacts.id, contactGroups.contactId), eq(contactGroups.groupId, options?.contact_group))
 		);
 	}
 
 	if (options?.filter) {
-		const where = filterCriteriaBuilder(users, options?.filter);
+		const where = filterCriteriaBuilder(contacts, options?.filter);
 		sql = sql.where(where);
 	}
 
 	const res = await sql.execute();
 
-	if (options?.user_group) {
-		return res.map((user) => user.users);
+	if (options?.contact_group) {
+		return res.map((contact) => contact.contacts);
 	}
 
 	return res;
