@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { IncomingMessage, NewIncomingMessage } from '../model/db/schema/incomingMessages';
-import { Contact } from '../model/db/schema/users';
+import { Contact } from '../model/db/schema/contacts';
 import { getIncomingMessages } from '../model/messages';
-import { isContactExist } from '../model/users';
+import { isContactExist } from '../model/contacts';
 
 const messageRouter = Router();
 messageRouter.get('/', getMessages);

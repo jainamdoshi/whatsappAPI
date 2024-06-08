@@ -1,6 +1,6 @@
 import { integer, pgTable, primaryKey } from 'drizzle-orm/pg-core';
 import { groups } from './groups';
-import { contacts } from './users';
+import { contacts } from './contacts';
 
 export const contactGroups = pgTable(
 	'contact_groups',

@@ -3,7 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import { PORT } from './config/init';
 import messageRouter from './routes/message';
-import contactRouter from './routes/user';
+import contactRouter from './routes/contact';
 import whatsAppRouter from './routes/whatsapp';
 import { groupRouter } from './routes/group';
 

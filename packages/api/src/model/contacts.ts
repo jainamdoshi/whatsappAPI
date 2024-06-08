@@ -1,10 +1,9 @@
 import { and, eq } from 'drizzle-orm';
+import { PgSelect } from 'drizzle-orm/pg-core';
 import { getDB } from '../config/database';
 import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
-import { ContactGroup, contactGroups } from './db/schema/userGroups';
-import { NewContact, Contact, contacts } from './db/schema/users';
-import { PgSelect } from 'drizzle-orm/pg-core';
-import { Group } from './db/schema/groups';
+import { contactGroups } from './db/schema/contactGroups';
+import { Contact, contacts, NewContact } from './db/schema/contacts';
 
 export async function isContactExist(phoneNumber: string): Promise<boolean> {
 	const db = await getDB();

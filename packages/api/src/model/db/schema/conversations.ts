@@ -1,5 +1,5 @@
 import { char, integer, pgTable } from 'drizzle-orm/pg-core';
-import { contacts } from './users';
+import { contacts } from './contacts';
 
 export const conversation = pgTable('conversations', {
 	id: char('id', { length: 32 }).primaryKey(),

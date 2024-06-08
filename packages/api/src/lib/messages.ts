@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_USER_ACCESS_TOKEN } from '../config/init';
-import { Contact } from '../model/db/schema/users';
-import { getContacts } from '../model/users';
+import { Contact } from '../model/db/schema/contacts';
+import { getContacts } from '../model/contacts';
 
 export async function sendMessageToContacts(phoneNumbers: string[], templateName: string) {
 	// if (!phoneNumbers.length || !templateName) {

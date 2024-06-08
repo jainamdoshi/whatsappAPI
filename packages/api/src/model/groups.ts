@@ -1,7 +1,7 @@
 import { getDB } from '../config/database';
 import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
 import { groups, NewGroup } from './db/schema/groups';
-import { contactGroups } from './db/schema/userGroups';
+import { contactGroups } from './db/schema/contactGroups';
 
 export async function addGroup(group: NewGroup) {
 	const db = await getDB();

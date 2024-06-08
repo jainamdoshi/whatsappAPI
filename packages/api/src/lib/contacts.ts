@@ -1,8 +1,8 @@
 import { Group } from '../model/db/schema/groups';
-import { ContactGroup } from '../model/db/schema/userGroups';
-import { Contact } from '../model/db/schema/users';
+import { ContactGroup } from '../model/db/schema/contactGroups';
+import { Contact } from '../model/db/schema/contacts';
 import { addGroup, addContactGroup, getGroup, getContactGroups } from '../model/groups';
-import { addContact, getContacts } from '../model/users';
+import { addContact, getContacts } from '../model/contacts';
 import { RawContactData } from './csvLoader';
 
 export async function parseRawContactData(contacts: RawContactData[], groupId: number) {

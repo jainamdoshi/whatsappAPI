@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
-import { NewContact, Contact } from '../model/db/schema/users';
-import { addContact, getContacts } from '../model/users';
+import { NewContact, Contact } from '../model/db/schema/contacts';
+import { addContact, getContacts } from '../model/contacts';
 import { loadContactDataFromCSV, RawContactData } from '../lib/csvLoader';
-import { parseRawContactData } from '../lib/users';
+import { parseRawContactData } from '../lib/contacts';
 import { Group } from '../model/db/schema/groups';
 import { addGroup, getGroup } from '../model/groups';
 
