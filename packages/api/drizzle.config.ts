@@ -10,7 +10,7 @@ export default defineConfig({
 		port: DB_PORT,
 		user: DB_USER,
 		database: DB_DATABASE,
-		password: DB_PASSWORD,
+		password: DB_PASSWORD
 	},
 	verbose: true,
 	strict: true

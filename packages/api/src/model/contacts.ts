@@ -20,7 +20,8 @@ export async function addContact(contact: NewContact): Promise<Contact> {
 export async function getContacts<T extends typeof contacts>(options?: {
 	select?: SelectedFields<T>;
 	filter?: FilterCriteria<T>;
-	contact_group?: number;
+	// Need to change the name of the table to contact_groups, there is bug in drizzle-kit
+	user_group?: number;
 }) {
 	const db = await getDB();
 	let sql;
@@ -33,10 +34,10 @@ export async function getContacts<T extends typeof contacts>(options?: {
 
 	sql = sql.from(contacts) as unknown as PgSelect;
 
-	if (options?.contact_group) {
+	if (options?.user_group) {
 		sql = sql.innerJoin(
 			contactGroups,
-			and(eq(contacts.id, contactGroups.contactId), eq(contactGroups.groupId, options?.contact_group))
+			and(eq(contacts.id, contactGroups.contactId), eq(contactGroups.groupId, options?.user_group))
 		);
 	}
 
@@ -47,7 +48,7 @@ export async function getContacts<T extends typeof contacts>(options?: {
 
 	const res = await sql.execute();
 
-	if (options?.contact_group) {
+	if (options?.user_group) {
 		return res.map((contact) => contact.contacts);
 	}
 

@@ -6,6 +6,7 @@
 	"scripts": {
 		"start": "ts-node src/index.ts",
 		"drizzle-migrate": "drizzle-kit migrate",
+		"drizzle-up": "drizzle-kit up",
 		"drizzle-generate": "drizzle-kit generate",
 		"drizzle-push": "drizzle-kit push",
 		"drizzle-introspect": "drizzle-kit introspect",

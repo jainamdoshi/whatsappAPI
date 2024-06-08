@@ -22,7 +22,7 @@ type LoadContactBody = {
 };
 
 async function getContactsHandler(req: Request<{}, {}, {}, GetContactsQuery>, res: Response<Contact[]>) {
-	const options = req.query.group ? { contact_group: req.query.group } : {};
+	const options = req.query.group ? { user_group: req.query.group } : {};
 
 	const allContacts = await getContacts(options);
 	return res.status(200).send(allContacts);

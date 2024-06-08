@@ -3,7 +3,8 @@ import { groups } from './groups';
 import { contacts } from './contacts';
 
 export const contactGroups = pgTable(
-	'contact_groups',
+	// Need to change the name of the table to contact_groups, there is bug in drizzle-kit
+	'user_groups',
 	{
 		contactId: integer('contact_id')
 			.references(() => contacts.id)

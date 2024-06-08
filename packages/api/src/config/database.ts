@@ -17,5 +17,6 @@ export async function getDB() {
 	}
 	await clientDB.connect();
 	db = drizzle(clientDB);
+	console.log('Database connected successfully!');
 	return db;
 }
