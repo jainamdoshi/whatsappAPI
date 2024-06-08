@@ -2,7 +2,7 @@
 
 import { getGroups, Group } from '@/server/group/action';
 import { useQuery } from '@tanstack/react-query';
-import UserGroup from './group';
+import ContactGroup from './group';
 
 export default function GroupList() {
 	const { data, isLoading, isError } = useQuery<Group[]>({
@@ -15,7 +15,7 @@ export default function GroupList() {
 
 	return (
 		<div className='flex-1 overflow-auto py-2'>
-			{data && data.map((group) => <UserGroup key={group.id} group={group} />)}
+			{data && data.map((group) => <ContactGroup key={group.id} group={group} />)}
 		</div>
 	);
 }

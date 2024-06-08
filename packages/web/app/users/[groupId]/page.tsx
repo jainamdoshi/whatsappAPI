@@ -27,9 +27,9 @@ export default function GroupUsers({ params }: { params: { groupId: string } }) 
 			<main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>
 				<div className='flex items-center'>
 					<h1 className='font-semibold text-lg md:text-2xl'>{groupQuery.data.name}</h1>
-					<Button className='ml-auto' size='sm'>
+					{/* <Button className='ml-auto' size='sm'>
 						Add Contact
-					</Button>
+					</Button> */}
 				</div>
 				<div className='border shadow-sm rounded-lg'></div>
 				<ContactTable contacts={contactsQuery.data || []} />
@@ -44,7 +44,7 @@ function ContactTable({ contacts }: { contacts: Contact[] }) {
 
 	const handleAllSelectedCheckbox = () => {
 		if (selectedCount == contacts.length) {
-			setSelected([]);
+			setSelected(new Array(contacts.length).fill(false));
 			setSelectedCount(0);
 		} else {
 			setSelected(new Array(contacts.length).fill(true));
@@ -71,7 +71,7 @@ function ContactTable({ contacts }: { contacts: Contact[] }) {
 						/>
 					</TableHead>
 					<TableHead className='max-w-[200px]'>Name</TableHead>
-					<TableHead>Phone</TableHead>
+					<TableHead>Phone Number</TableHead>
 					<TableHead className='w-[80px]'>Actions</TableHead>
 				</TableRow>
 			</TableHeader>
@@ -86,7 +86,7 @@ function ContactTable({ contacts }: { contacts: Contact[] }) {
 							/>
 						</TableCell>
 						<TableCell className='font-medium'>{contact.name}</TableCell>
-						<TableCell>{contact.phoneNumber}</TableCell>
+						<TableCell>+{contact.phoneNumber}</TableCell>
 						<TableCell>
 							<Button variant='ghost' size='icon'>
 								<FilePenIcon className='h-4 w-4' />
