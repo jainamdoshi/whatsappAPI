@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
+import { IncomingMessage, NewIncomingMessage } from '../model/db/schema/incomingMessages';
 import { User } from '../model/db/schema/users';
 import { getIncomingMessages } from '../model/messages';
 import { isUserExist } from '../model/users';
-import { IncomingMessage, NewIncomingMessage } from '../model/db/schema/incomingMessages';
 
 const messageRouter = Router();
 messageRouter.get('/', getMessages);
@@ -18,9 +18,9 @@ async function getMessages(_: Request, res: Response<IncomingMessage[]>) {
 async function newMessage(req: Request<{}, {}, NewMessageReqBody>, res: Response<IncomingMessage | string>) {
 	const message = req.body;
 	message.timestamp = new Date(message.timestamp);
+	console.log(JSON.stringify(message));
 
 	let user: User | null = null;
-
 	try {
 		if (!(await isUserExist(message.phoneNumber))) {
 			// user = await addUser({ phoneNumber: message.phoneNumber });
