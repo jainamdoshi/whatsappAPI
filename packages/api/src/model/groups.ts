@@ -1,7 +1,8 @@
 import { getDB } from '../config/database';
 import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
-import { groups, NewGroup } from './db/schema/groups';
+import { Group, groups, NewGroup } from './db/schema/groups';
 import { contactGroups } from './db/schema/contactGroups';
+import { PgSelect } from 'drizzle-orm/pg-core';
 
 export async function addGroup(group: NewGroup) {
 	const db = await getDB();
@@ -22,14 +23,16 @@ export async function getGroup<T extends typeof groups>(options?: {
 		sql = db.select();
 	}
 
-	sql = sql.from(groups);
+	sql = sql.from(groups) as unknown as PgSelect;
 
 	if (options?.filter) {
 		const where = filterCriteriaBuilder(groups, options?.filter);
 		sql = sql.where(where);
 	}
 
-	return await sql.execute();
+	sql = sql.orderBy(groups.name);
+
+	return (await sql.execute()) as Group[];
 }
 
 export async function addContactGroup(contactId: number, groupId: number) {

@@ -46,6 +46,8 @@ export async function getContacts<T extends typeof contacts>(options?: {
 		sql = sql.where(where);
 	}
 
+	sql = sql.orderBy(contacts.name);
+
 	const res = await sql.execute();
 
 	if (options?.user_group) {
