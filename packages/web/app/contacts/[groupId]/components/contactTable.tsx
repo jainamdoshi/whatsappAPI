@@ -4,26 +4,49 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Contact } from '@/server/contact/action';
+import { useAtom } from 'jotai';
 import { FilePenIcon } from 'lucide-react';
 import { useState } from 'react';
+import { selectedContactsAtom } from '../page';
 
 export default function ContactTable({ contacts }: { contacts: Contact[] }) {
-	const [selected, setSelected] = useState<boolean[]>([]);
-	const [selectedCount, setSelectedCount] = useState(0);
+	const [selectedContacts, setSelectedContacts] = useAtom(selectedContactsAtom);
+
+	let count = 0;
+	const prevSelectedContacts = contacts.map((contact) => {
+		if (selectedContacts.find((c) => c.id == contact.id)) {
+			count++;
+			return true;
+		}
+		return false;
+	});
+
+	const [selected, setSelected] = useState<boolean[]>(prevSelectedContacts);
+	const [selectedCount, setSelectedCount] = useState(count);
 
 	const handleAllSelectedCheckbox = () => {
 		if (selectedCount == contacts.length) {
 			setSelected(new Array(contacts.length).fill(false));
+			setSelectedContacts(selectedContacts.filter((contact) => !contacts.find((c) => c.id == contact.id)));
 			setSelectedCount(0);
 		} else {
 			setSelected(new Array(contacts.length).fill(true));
+			setSelectedContacts(selectedContacts.concat(contacts));
 			setSelectedCount(contacts.length);
 		}
 	};
 
 	const handleContactCheckbox = (index: number) => {
 		const newSelected = [...selected];
-		selected[index] ? setSelectedCount(selectedCount - 1) : setSelectedCount(selectedCount + 1);
+
+		if (selected[index]) {
+			setSelectedContacts(selectedContacts.filter((contact) => contact.id != contacts[index].id));
+			setSelectedCount(selectedCount - 1);
+		} else {
+			setSelectedContacts([...selectedContacts, contacts[index]]);
+			setSelectedCount(selectedCount + 1);
+		}
+
 		newSelected[index] = !newSelected[index];
 		setSelected(newSelected);
 	};
@@ -36,7 +59,7 @@ export default function ContactTable({ contacts }: { contacts: Contact[] }) {
 						<Checkbox
 							id='select-all'
 							onClick={handleAllSelectedCheckbox}
-							checked={selectedCount == contacts.length}
+							checked={selectedCount != 0 ? selectedCount == contacts.length : false}
 						/>
 					</TableHead>
 					<TableHead className='max-w-[200px]'>Name</TableHead>

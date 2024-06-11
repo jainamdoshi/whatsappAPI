@@ -1,5 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { ContactIcon, SearchIcon } from 'lucide-react';
+import { ContactIcon } from 'lucide-react';
 import Link from 'next/link';
 import GroupList from './components/groupList';
 

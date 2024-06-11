@@ -1,17 +1,22 @@
 'use client';
 
-import { getContactsByGroup } from '@/server/contact/action';
+import { Contact, getContactsByGroup } from '@/server/contact/action';
 import { getGroup, Group } from '@/server/group/action';
 import { useQuery } from '@tanstack/react-query';
 import ContactTable from './components/contactTable';
+import { atom, useAtom } from 'jotai';
+
+export const selectedContactsAtom = atom<Contact[]>([]);
 
 export default function GroupContacts({ params }: { params: { groupId: string } }) {
+	const [selectedContacts, _] = useAtom(selectedContactsAtom);
+
 	const groupQuery = useQuery<Group>({
 		queryKey: ['group', params.groupId],
 		queryFn: () => getGroup(params.groupId)
 	});
 
-	const contactsQuery = useQuery({
+	const contactsQuery = useQuery<Contact[]>({
 		queryKey: ['contacts', params.groupId],
 		queryFn: () => getContactsByGroup(parseInt(params.groupId))
 	});
@@ -26,6 +31,7 @@ export default function GroupContacts({ params }: { params: { groupId: string } 
 					{/* <Button className='ml-auto' size='sm'>
 						Add Contact
 					</Button> */}
+					<div className='ml-auto'>Selected Contacts {selectedContacts.length}</div>
 				</div>
 				<div className='border shadow-sm rounded-lg'></div>
 				<ContactTable contacts={contactsQuery.data || []} />
