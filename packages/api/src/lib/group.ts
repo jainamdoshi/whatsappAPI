@@ -8,26 +8,30 @@ export type NestedGroup = {
 
 export function parseGroups(groups: Group[]): NestedGroup[] {
 	const groupMap = new Map<number, NestedGroup>();
-	const rootGroups: NestedGroup[] = [];
+	const rootGroups: NestedGroup[] = groups
+		.filter((group) => !group.parentGroupId)
+		.map((group) => {
+			const res = parseGroup(group);
+			groupMap.set(group.id, res);
+			return res;
+		});
 
-	groups.forEach((group) => {
-		const nestedGroup: NestedGroup = {
-			id: group.id,
-			name: group.name,
-			subGroup: []
-		};
+	const nonRootGroups = groups.filter((group) => group.parentGroupId);
 
-		groupMap.set(group.id, nestedGroup);
+	nonRootGroups.forEach((group) => {
+		const nestedGroup: NestedGroup = parseGroup(group);
 
-		if (!group.parentGroupId) {
-			rootGroups.push(nestedGroup);
-		} else {
-			const parentGroup = groupMap.get(group.parentGroupId);
-			if (parentGroup) {
-				parentGroup.subGroup.push(nestedGroup);
-			}
-		}
+		const parentGroup = groupMap.get(group.parentGroupId as number);
+		parentGroup?.subGroup.push(nestedGroup);
 	});
 
 	return rootGroups;
+}
+
+function parseGroup(group: Group) {
+	return {
+		id: group.id,
+		name: group.name,
+		subGroup: []
+	};
 }
