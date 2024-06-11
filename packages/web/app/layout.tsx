@@ -2,6 +2,7 @@ import TanstackProvider from '@/providers/tanstackProvider';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import JotaiProvider from '@/providers/jotaiProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,10 +19,18 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body className={inter.className}>
-				<TanstackProvider>
+				<Providers>
 					<div>{children}</div>
-				</TanstackProvider>
+				</Providers>
 			</body>
 		</html>
+	);
+}
+
+function Providers({ children }: { children: React.ReactNode }) {
+	return (
+		<TanstackProvider>
+			<JotaiProvider>{children}</JotaiProvider>
+		</TanstackProvider>
 	);
 }
