@@ -1,10 +1,12 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Contact, getContactsByGroup } from '@/server/contact/action';
 import { getGroup, Group } from '@/server/group/action';
 import { useQuery } from '@tanstack/react-query';
-import ContactTable from './components/contactTable';
 import { atom, useAtom } from 'jotai';
+import Link from 'next/link';
+import ContactTable from './components/contactTable';
 
 export const selectedContactsAtom = atom<Contact[]>([]);
 
@@ -28,10 +30,10 @@ export default function GroupContacts({ params }: { params: { groupId: string } 
 			<main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6'>
 				<div className='flex items-center'>
 					<h1 className='font-semibold text-lg md:text-2xl'>{groupQuery.data.name}</h1>
-					{/* <Button className='ml-auto' size='sm'>
-						Add Contact
-					</Button> */}
 					<div className='ml-auto'>Selected Contacts {selectedContacts.length}</div>
+					<Button asChild className='ml-auto'>
+						<Link href={`/message`}>Send Message</Link>
+					</Button>
 				</div>
 				<div className='border shadow-sm rounded-lg'></div>
 				<ContactTable contacts={contactsQuery.data || []} />
