@@ -13,14 +13,10 @@ export const dbConfig = {
 
 const clientDB = new Client(dbConfig);
 
-let db: NodePgDatabase;
+export let db: NodePgDatabase;
 
-export async function getDB() {
-	if (db) {
-		return db;
-	}
+export async function connectDB() {
 	await clientDB.connect();
 	db = drizzle(clientDB);
 	console.log('Database connected successfully!');
-	return db;
 }

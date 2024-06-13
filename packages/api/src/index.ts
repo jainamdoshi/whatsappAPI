@@ -6,7 +6,7 @@ import messageRouter from './routes/message';
 import contactRouter from './routes/contact';
 import whatsAppRouter from './routes/whatsapp';
 import { groupRouter } from './routes/group';
-import { getDB } from './config/database';
+import { connectDB } from './config/database';
 
 const app = express();
 app.use(bodyParser.json());
@@ -19,5 +19,5 @@ app.use('/message', messageRouter);
 
 app.listen(PORT, async () => {
 	console.log(`Server is running on http://localhost:${PORT}`);
-	await getDB();
+	await connectDB();
 });

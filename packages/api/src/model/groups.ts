@@ -1,11 +1,10 @@
-import { getDB } from '../config/database';
-import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
-import { Group, groups, NewGroup } from './db/schema/groups';
-import { contactGroups } from './db/schema/contactGroups';
 import { PgSelect } from 'drizzle-orm/pg-core';
+import { db } from '../config/database';
+import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
+import { contactGroups } from './db/schema/contactGroups';
+import { Group, groups, NewGroup } from './db/schema/groups';
 
 export async function addGroup(group: NewGroup) {
-	const db = await getDB();
 	const res = await db.insert(groups).values(group).returning();
 	return res[0];
 }
@@ -14,7 +13,6 @@ export async function getGroup<T extends typeof groups>(options?: {
 	select?: SelectedFields<T>;
 	filter?: FilterCriteria<T>;
 }) {
-	const db = await getDB();
 	let sql;
 
 	if (options?.select) {
@@ -36,13 +34,11 @@ export async function getGroup<T extends typeof groups>(options?: {
 }
 
 export async function addContactGroup(contactId: number, groupId: number) {
-	const db = await getDB();
 	const res = await db.insert(contactGroups).values({ contactId, groupId }).returning();
 	return res[0];
 }
 
 export async function getContactGroups() {
-	const db = await getDB();
 	const res = await db.select().from(contactGroups).execute();
 	return res;
 }
