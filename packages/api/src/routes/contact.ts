@@ -53,7 +53,6 @@ async function loadContact(req: Request<{}, {}, LoadContactBody, {}>, res: Respo
 	}
 
 	const result = await parseRawContactData(data, group.id);
-	console.log(result.length);
 	return res.status(200).send(result);
 }
 

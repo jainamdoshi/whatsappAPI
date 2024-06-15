@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { PgSelect } from 'drizzle-orm/pg-core';
 import { db } from '../config/database';
-import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
+import { filterCriteriaBuilder, orderByBuilder, QueryOptions } from '../lib/util';
 import { contactGroups } from './db/schema/contactGroups';
 import { Contact, contacts, NewContact } from './db/schema/contacts';
 
@@ -15,12 +15,8 @@ export async function addContact(contact: NewContact): Promise<Contact> {
 	return res[0];
 }
 
-export async function getContacts<T extends typeof contacts>(options?: {
-	select?: SelectedFields<T>;
-	filter?: FilterCriteria<T>;
-	// Need to change the name of the table to contact_groups, there is bug in drizzle-kit
-	user_group?: number;
-}) {
+// Need to change the name of the table to contact_groups, there is bug in drizzle-kit
+export async function getContacts<T extends typeof contacts>(options?: QueryOptions<T> & { user_group?: number }) {
 	let sql;
 
 	if (options?.select) {
@@ -43,7 +39,9 @@ export async function getContacts<T extends typeof contacts>(options?: {
 		sql = sql.where(where);
 	}
 
-	sql = sql.orderBy(contacts.name);
+	if (options?.orderByColumns) {
+		sql = sql.orderBy(...orderByBuilder(options.orderByColumns));
+	}
 
 	const res = await sql.execute();
 

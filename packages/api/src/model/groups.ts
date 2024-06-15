@@ -1,6 +1,6 @@
 import { PgSelect } from 'drizzle-orm/pg-core';
 import { db } from '../config/database';
-import { FilterCriteria, filterCriteriaBuilder, SelectedFields } from '../lib/util';
+import { filterCriteriaBuilder, orderByBuilder, QueryOptions } from '../lib/util';
 import { contactGroups } from './db/schema/contactGroups';
 import { Group, groups, NewGroup } from './db/schema/groups';
 
@@ -9,10 +9,7 @@ export async function addGroup(group: NewGroup) {
 	return res[0];
 }
 
-export async function getGroup<T extends typeof groups>(options?: {
-	select?: SelectedFields<T>;
-	filter?: FilterCriteria<T>;
-}) {
+export async function getGroup<T extends typeof groups>(options?: QueryOptions<T>) {
 	let sql;
 
 	if (options?.select) {
@@ -24,11 +21,13 @@ export async function getGroup<T extends typeof groups>(options?: {
 	sql = sql.from(groups) as unknown as PgSelect;
 
 	if (options?.filter) {
-		const where = filterCriteriaBuilder(groups, options?.filter);
+		const where = filterCriteriaBuilder(groups, options.filter);
 		sql = sql.where(where);
 	}
 
-	sql = sql.orderBy(groups.name);
+	if (options?.orderByColumns) {
+		sql = sql.orderBy(...orderByBuilder(options.orderByColumns));
+	}
 
 	return (await sql.execute()) as Group[];
 }
