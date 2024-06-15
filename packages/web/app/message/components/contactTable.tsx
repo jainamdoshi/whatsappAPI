@@ -1,9 +1,13 @@
+'use client';
+
+import { selectedContactsAtom } from '@/app/contacts/[groupId]/page';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Contact } from '@/server/contact/action';
+import { useAtom } from 'jotai';
 import { Delete } from 'lucide-react';
 
-export default function ContactTable({ contacts }: { contacts: Contact[] }) {
+export default function ContactTable() {
+	const [selectedContacts, _] = useAtom(selectedContactsAtom);
 	return (
 		<Table>
 			<TableHeader>
@@ -15,7 +19,7 @@ export default function ContactTable({ contacts }: { contacts: Contact[] }) {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{contacts.map((contact) => (
+				{selectedContacts.map((contact) => (
 					<TableRow key={contact.id}>
 						<TableCell></TableCell>
 						<TableCell className='font-medium'>{contact.name}</TableCell>
