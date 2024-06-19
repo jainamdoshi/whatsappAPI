@@ -1,8 +1,10 @@
 import { Request, Response, Router } from 'express';
 import { WHATSAPP_VERIFY_TOKEN } from '../config/init';
 import { parseNewIncomingMessage, sendMessageToContacts } from '../lib/messages';
+import { IncomingMessage } from '../model/db/schema/incomingMessages';
 import { NewOutgoingMessage } from '../model/db/schema/outgoingMessages';
 import { WhatsAppEventNotification } from '../model/eventNotification';
+import { io } from '../websocket';
 
 const whatsAppRouter = Router();
 
@@ -27,8 +29,6 @@ async function eventNotification(req: Request<any, any, WhatsAppEventNotificatio
 	const entries = events.entry;
 	console.log(JSON.stringify(entries));
 
-	const newIncomingMessages = [];
-
 	for (const entry of entries) {
 		for (const change of entry.changes) {
 			if (change.field != 'messages') {
@@ -37,8 +37,11 @@ async function eventNotification(req: Request<any, any, WhatsAppEventNotificatio
 			}
 
 			for (const message of change.value.messages || []) {
-				const newIncomingMessage = await parseNewIncomingMessage(message);
-				newIncomingMessages.push(newIncomingMessage);
+				const newIncomingMessage = (await parseNewIncomingMessage(message)) as IncomingMessage;
+				io.emit(`newIncomingMessages-${newIncomingMessage.fromContactId}`, {
+					...newIncomingMessage,
+					type: 'incoming'
+				});
 			}
 		}
 	}

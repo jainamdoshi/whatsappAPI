@@ -3,12 +3,16 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { ChatContext } from '@/providers/messengerProvider';
 import { getChatMessages, Message } from '@/server/chat/actions';
 import { getContactById } from '@/server/contact/action';
 import { useQuery } from '@tanstack/react-query';
 import { SendIcon } from 'lucide-react';
+import { useContext } from 'react';
 
 export default function Chat({ params }: { params: { contactId: string } }) {
+	const socket = useContext(ChatContext);
+
 	const messagesQuery = useQuery({
 		queryKey: ['chatContacts', params.contactId],
 		queryFn: () => getChatMessages(parseInt(params.contactId))
@@ -19,8 +23,13 @@ export default function Chat({ params }: { params: { contactId: string } }) {
 		queryFn: () => getContactById(parseInt(params.contactId))
 	});
 
+	socket?.on(`newIncomingMessages-${params.contactId}`, (message: Message) => {
+		messagesQuery.refetch();
+	});
+
 	if (!messagesQuery.data || messagesQuery.isLoading || !contactQuery.data || contactQuery.isLoading) return null;
 	if (messagesQuery.isError || contactQuery.isError) return <div>Error</div>;
+
 
 	return (
 		<div className='flex flex-col'>

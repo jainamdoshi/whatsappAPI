@@ -12,9 +12,6 @@ export default function MessengerProvider({ children }: { children: React.ReactN
 	useEffect(() => {
 		const socket = io('http://localhost:8080');
 		setSocket(socket);
-		// socket.on('connect', () => {
-		// 	console.log('connected');
-		// });
 	}, []);
 
 	return <ChatContext.Provider value={socket}>{children}</ChatContext.Provider>;
