@@ -1,7 +1,7 @@
 import { char, integer, pgTable } from 'drizzle-orm/pg-core';
 import { contacts } from './contacts';
 
-export const conversation = pgTable('conversations', {
+export const conversations = pgTable('conversations', {
 	id: char('id', { length: 32 }).primaryKey(),
 	contactId: integer('contact_id')
 		.references(() => contacts.id)
@@ -11,5 +11,5 @@ export const conversation = pgTable('conversations', {
 		.notNull()
 });
 
-export type Conversation = typeof conversation.$inferSelect;
-export type NewConversation = typeof conversation.$inferInsert;
+export type Conversation = typeof conversations.$inferSelect;
+export type NewConversation = typeof conversations.$inferInsert;

@@ -46,8 +46,8 @@ export async function getContacts<T extends typeof contacts>(options?: QueryOpti
 	const res = await sql.execute();
 
 	if (options?.user_group) {
-		return res.map((contact) => contact.contacts);
+		return res.map((contact) => contact.contacts) as Contact[];
 	}
 
-	return res;
+	return res as Contact[];
 }

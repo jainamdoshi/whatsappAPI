@@ -20,8 +20,8 @@ class WhatsAppEventEntry {
 	}
 }
 
-type WhatsAppEventChangeValue = {
-	messaging_product: string;
+export type WhatsAppEventChangeValue = {
+	messaging_product: 'whatsapp';
 	metadata: WhatsAppMetadataChange;
 	contacts?: WhatsAppContact[];
 	messages?: WhatsAppMessage[];
@@ -60,15 +60,17 @@ class WhatsAppContact {
 	}
 }
 
+type TextType = 'text' | 'image' | 'video';
+
 export class WhatsAppMessage {
 	from: string;
 	timestamp: string;
 	text: {
 		body: string;
 	};
-	type: string;
+	type: TextType;
 
-	constructor(from: string, timestamp: string, text: { body: string }, type: string) {
+	constructor(from: string, timestamp: string, text: { body: string }, type: TextType) {
 		this.from = from;
 		this.timestamp = timestamp;
 		this.text = text;
@@ -111,7 +113,7 @@ class WhatsAppStatus {
 // 			"conversation": {
 // 				"id": "158e8778a20f301f0b0382bf9cb4696b",
 // 				"origin": {
-// 				"type": "utility"
+// 					"type": "utility"
 // 				}
 // 			},
 // 			"pricing": {

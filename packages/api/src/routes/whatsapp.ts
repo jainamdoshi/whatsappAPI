@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { WHATSAPP_VERIFY_TOKEN } from '../config/init';
-import { sendMessageToContacts } from '../lib/messages';
+import { parseNewIncomingMessage, sendMessageToContacts } from '../lib/messages';
 import { NewOutgoingMessage } from '../model/db/schema/outgoingMessages';
 import { WhatsAppEventNotification } from '../model/eventNotification';
 
@@ -24,8 +24,24 @@ async function verifyingRequest(req: Request, res: Response) {
 
 async function eventNotification(req: Request<any, any, WhatsAppEventNotification>, res: Response) {
 	const events = req.body;
-	const messages = events.entry;
-	console.log(JSON.stringify(messages));
+	const entries = events.entry;
+	console.log(JSON.stringify(entries));
+
+	const newIncomingMessages = [];
+
+	for (const entry of entries) {
+		for (const change of entry.changes) {
+			if (change.field != 'messages') {
+				console.error('Invalid field');
+				continue;
+			}
+
+			for (const message of change.value.messages || []) {
+				const newIncomingMessage = await parseNewIncomingMessage(message);
+				newIncomingMessages.push(newIncomingMessage);
+			}
+		}
+	}
 	return res.status(200).send('EVENT_RECEIVED');
 }
 
