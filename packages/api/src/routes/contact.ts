@@ -1,8 +1,9 @@
 import { Request, Response, Router } from 'express';
-import { NewContact, Contact } from '../model/db/schema/contacts';
-import { addContact, getContacts } from '../model/contacts';
-import { loadContactDataFromCSV, RawContactData } from '../lib/csvLoader';
 import { parseRawContactData } from '../lib/contacts';
+import { loadContactDataFromCSV, RawContactData } from '../lib/csvLoader';
+import { FilterCriteria } from '../lib/util';
+import { addContact, getContacts } from '../model/contacts';
+import { Contact, contacts, NewContact } from '../model/db/schema/contacts';
 import { Group } from '../model/db/schema/groups';
 import { addGroup, getGroup } from '../model/groups';
 
@@ -12,7 +13,7 @@ contactRouter.get('/', getContactsHandler);
 contactRouter.post('/', newContact);
 contactRouter.post('/load', loadContact);
 
-type GetContactsQuery = {
+type GetContactsQuery = Partial<Contact> & {
 	group?: number;
 };
 
@@ -22,7 +23,19 @@ type LoadContactBody = {
 };
 
 async function getContactsHandler(req: Request<{}, {}, {}, GetContactsQuery>, res: Response<Contact[]>) {
-	const options = req.query.group ? { user_group: req.query.group } : {};
+	const query = req.query;
+
+	const filter = Object.keys(query).reduce((acc: any, key) => {
+		if (key != 'group') {
+			acc[key] = [query[key as keyof GetContactsQuery]];
+		}
+		return acc;
+	}, {} as GetContactsQuery);
+
+	const options = {
+		filter: filter as FilterCriteria<typeof contacts>,
+		user_group: query.group
+	};
 
 	const allContacts = await getContacts(options);
 	return res.status(200).send(allContacts);

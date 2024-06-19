@@ -12,7 +12,7 @@ type List<T> = {
 	[K in keyof T]: T[K][];
 };
 
-type FilterCriteria<T> = List<PartialColumn<T extends PgTableWithColumns<infer K> ? K['columns'] : never>>;
+export type FilterCriteria<T> = List<PartialColumn<T extends PgTableWithColumns<infer K> ? K['columns'] : never>>;
 type SelectedFields<T> = T extends PgTableWithColumns<infer K> ? K['columns'] : never;
 type OrderedColumns<T> = T extends PgTableWithColumns<infer K>
 	? { column: K['columns']; order: 'asc' | 'desc' }[]

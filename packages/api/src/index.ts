@@ -11,6 +11,7 @@ import senderContactRouter from './routes/senderContact';
 import templateRouter from './routes/template';
 import whatsAppRouter from './routes/whatsapp';
 import { Server } from 'socket.io';
+import chatRouter from './routes/chat';
 
 const app = express();
 const server = createServer(app);
@@ -30,6 +31,7 @@ app.use('/group', groupRouter);
 app.use('/message', messageRouter);
 app.use('/senderContact', senderContactRouter);
 app.use('/template', templateRouter);
+app.use('/chat', chatRouter);
 
 server.listen(PORT, async () => {
 	console.log(`Server is running on http://localhost:${PORT}`);

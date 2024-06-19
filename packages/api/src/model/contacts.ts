@@ -4,6 +4,7 @@ import { db } from '../config/database';
 import { filterCriteriaBuilder, orderByBuilder, QueryOptions } from '../lib/util';
 import { contactGroups } from './db/schema/contactGroups';
 import { Contact, contacts, NewContact } from './db/schema/contacts';
+import { incomingMessages } from './db/schema/incomingMessages';
 
 export async function isContactExist(phoneNumber: string): Promise<boolean> {
 	const contact = await db.select().from(contacts).where(eq(contacts.phoneNumber, phoneNumber));
@@ -50,4 +51,13 @@ export async function getContacts<T extends typeof contacts>(options?: QueryOpti
 	}
 
 	return res as Contact[];
+}
+
+export async function getChatContacts() {
+	const chatContacts = await db
+		.selectDistinctOn([contacts.id])
+		.from(contacts)
+		.innerJoin(incomingMessages, eq(contacts.id, incomingMessages.fromContactId));
+
+	return chatContacts.map((contact) => contact.contacts) as Contact[];
 }
