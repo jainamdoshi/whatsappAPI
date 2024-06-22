@@ -4,11 +4,11 @@ import { Contact } from '../model/db/schema/contacts';
 import { getChatMessages, Message } from '../model/messages';
 
 const chatRouter = Router();
-chatRouter.get('/contacts', getContactsHandler);
+chatRouter.get('/contacts/:senderContactId', getContactsHandler);
 chatRouter.get('/messages/:contactId', getMessagesHandler);
 
-async function getContactsHandler(_: Request, res: Response<Contact[]>) {
-	const contacts = await getChatContacts();
+async function getContactsHandler(req: Request<{ senderContactId: string }>, res: Response<Contact[]>) {
+	const contacts = await getChatContacts(parseInt(req.params.senderContactId));
 	return res.status(200).send(contacts);
 }
 

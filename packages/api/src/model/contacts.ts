@@ -53,11 +53,14 @@ export async function getContacts<T extends typeof contacts>(options?: QueryOpti
 	return res as Contact[];
 }
 
-export async function getChatContacts() {
+export async function getChatContacts(senderContactId: number) {
 	const chatContacts = await db
 		.selectDistinctOn([contacts.id])
 		.from(contacts)
-		.innerJoin(incomingMessages, eq(contacts.id, incomingMessages.fromContactId));
+		.innerJoin(
+			incomingMessages,
+			and(eq(contacts.id, incomingMessages.fromContactId), eq(incomingMessages.toContactId, senderContactId))
+		);
 
 	return chatContacts.map((contact) => contact.contacts) as Contact[];
 }

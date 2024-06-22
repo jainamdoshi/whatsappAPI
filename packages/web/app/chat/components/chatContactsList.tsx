@@ -1,19 +1,23 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ChatContext } from '@/providers/messengerProvider';
 import { getChatContacts } from '@/server/chat/actions';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useContext } from 'react';
 
 export default function ChatContactsList() {
+	const { senderContactId } = useContext(ChatContext);
+
 	const { data, isError, isLoading } = useQuery({
-		queryKey: ['chatContacts'],
-		queryFn: getChatContacts
+		queryKey: ['chatContacts', senderContactId],
+		queryFn: () => getChatContacts(senderContactId)
 	});
 
 	if (!data || isLoading) return null;
 	if (isError) return <div>Error</div>;
-
+	
 	return (
 		<nav className='grid gap-2 py-4'>
 			{data.map((contact) => (

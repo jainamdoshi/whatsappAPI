@@ -53,26 +53,33 @@ export async function sendTemplateMessage(contact: Contact, templateName: string
 	return response.data;
 }
 
-export async function parseNewIncomingMessage(event: WhatsAppMessage) {
+export async function parseNewIncomingMessage(event: WhatsAppMessage, metadata: WhatsAppMetadataChange) {
 	if (event.type == 'text') {
-		return await addNewTextMessage(event);
+		return await addNewTextMessage(event, metadata);
 	}
 }
 
-async function addNewTextMessage(message: WhatsAppMessage) {
+async function addNewTextMessage(message: WhatsAppMessage, metadata: WhatsAppMetadataChange) {
 	const fromContact = await getContacts({
 		filter: {
 			phoneNumber: [message.from]
 		}
 	});
 
-	if (!fromContact.length) {
-		console.error('Contact not found');
+	const toContact = await getSenderContact({
+		filter: {
+			phoneNumber: [metadata.displayPhoneNumber]
+		}
+	});
+
+	if (!fromContact.length || !toContact.length) {
+		console.error('Contacts not found');
 		return;
 	}
 
 	return await addIncomingMessage({
 		fromContactId: fromContact[0].id,
+		toContactId: toContact[0].id,
 		timestamp: new Date(parseInt(message.timestamp) * 1000),
 		message: message.text.body
 	});

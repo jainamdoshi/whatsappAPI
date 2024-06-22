@@ -1,8 +1,8 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import MessengerProvider from '@/providers/messengerProvider';
 import { SearchIcon } from 'lucide-react';
 import ChatContactsList from './components/chatContactsList';
+import { SenderContactProfile } from './components/senderContactProfile';
 
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
 	return (
@@ -11,11 +11,7 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
 				<div className='flex flex-col border-r bg-gray-100/40 p-4 dark:bg-gray-800/40'>
 					<div className='flex h-[60px] items-center justify-between'>
 						<div className='flex items-center gap-2 font-semibold'>
-							<Avatar className='h-8 w-8'>
-								<AvatarImage src='/placeholder-user.jpg' />
-								<AvatarFallback>CN</AvatarFallback>
-							</Avatar>
-							<span>Chat</span>
+							<SenderContactProfile />
 						</div>
 						<Button variant='ghost' size='icon' className='rounded-full'>
 							<SearchIcon className='h-5 w-5' />

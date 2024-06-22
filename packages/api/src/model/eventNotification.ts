@@ -1,44 +1,81 @@
+export type TWhatsAppEventNotification = {
+	entry: TWhatsAppEventEntry[];
+};
+
 export class WhatsAppEventNotification {
 	entry: WhatsAppEventEntry[];
-	object: string;
 
-	constructor(entry: WhatsAppEventEntry[], object: string) {
-		this.entry = entry;
-		this.object = object;
+	constructor(entries: TWhatsAppEventEntry[]) {
+		this.entry = entries.map((entry) => new WhatsAppEventEntry(entry.id, entry.changes));
 	}
 }
+
+type TWhatsAppEventEntry = {
+	id: string;
+	changes: TWhatsAppEventChange[];
+};
 
 class WhatsAppEventEntry {
-	uid: string;
-	time: number;
+	id: string;
 	changes: WhatsAppEventChange[];
 
-	constructor(uid: string, time: number, changes: WhatsAppEventChange[]) {
-		this.uid = uid;
-		this.time = time;
-		this.changes = changes;
+	constructor(id: string, changes: TWhatsAppEventChange[]) {
+		this.id = id;
+		this.changes = changes.map((change) => new WhatsAppEventChange(change.value, change.field));
 	}
 }
 
-export type WhatsAppEventChangeValue = {
-	messaging_product: 'whatsapp';
-	metadata: WhatsAppMetadataChange;
-	contacts?: WhatsAppContact[];
-	messages?: WhatsAppMessage[];
-	statuses?: WhatsAppStatus[];
+type TWhatsAppEventChange = {
+	value: TWhatsAppEventChangeValue;
+	field: string;
 };
 
 class WhatsAppEventChange {
 	value: WhatsAppEventChangeValue;
 	field: string;
 
-	constructor(value: WhatsAppEventChangeValue, field: string) {
-		this.value = value;
+	constructor(value: TWhatsAppEventChangeValue, field: string) {
+		console.log('WhatsAppEventChange', value);
+		this.value = new WhatsAppEventChangeValue(value);
 		this.field = field;
 	}
 }
 
-class WhatsAppMetadataChange {
+type TWhatsAppEventChangeValue = {
+	messaging_product: 'whatsapp';
+	metadata: TWhatsAppMetadataChange;
+	contacts?: TWhatsAppContact[];
+	messages?: TWhatsAppMessage[];
+	statuses?: TWhatsAppStatus[];
+};
+
+class WhatsAppEventChangeValue {
+	messaging_product: 'whatsapp';
+	metadata: WhatsAppMetadataChange;
+	contacts?: WhatsAppContact[];
+	messages?: WhatsAppMessage[];
+	statuses?: WhatsAppStatus[];
+
+	constructor(value: TWhatsAppEventChangeValue) {
+		this.messaging_product = value.messaging_product;
+		this.metadata = new WhatsAppMetadataChange(value.metadata.display_phone_number, value.metadata.phone_number_id);
+		this.contacts = value.contacts?.map((contact) => new WhatsAppContact(contact.profile, contact.wa_id));
+		this.messages = value.messages?.map(
+			(message) => new WhatsAppMessage(message.from, message.timestamp, message.text, message.type)
+		);
+		this.statuses = value.statuses?.map(
+			(status) =>
+				new WhatsAppStatus(status.id, status.status, status.timestamp, status.recipient_id, status.conversation)
+		);
+	}
+}
+
+type TWhatsAppMetadataChange = {
+	display_phone_number: string;
+	phone_number_id: string;
+};
+
+export class WhatsAppMetadataChange {
 	displayPhoneNumber: string;
 	phoneNumberId: string;
 
@@ -47,6 +84,13 @@ class WhatsAppMetadataChange {
 		this.phoneNumberId = phoneNumberId;
 	}
 }
+
+type TWhatsAppContact = {
+	profile: {
+		name: string;
+	};
+	wa_id: string;
+};
 
 class WhatsAppContact {
 	profile: {
@@ -61,6 +105,16 @@ class WhatsAppContact {
 }
 
 type TextType = 'text' | 'image' | 'video';
+
+type TWhatsAppMessage = {
+	from: string;
+	id: string;
+	timestamp: string;
+	text: {
+		body: string;
+	};
+	type: TextType;
+};
 
 export class WhatsAppMessage {
 	from: string;
@@ -77,6 +131,16 @@ export class WhatsAppMessage {
 		this.type = type;
 	}
 }
+
+type TWhatsAppStatus = {
+	id: string;
+	status: string;
+	timestamp: string;
+	recipient_id: string;
+	conversation: {
+		id: string;
+	};
+};
 
 class WhatsAppStatus {
 	id: string;
@@ -99,33 +163,33 @@ class WhatsAppStatus {
 // 	"changes": [
 // 	{
 // 		"value": {
-// 		"messaging_product": "whatsapp",
-// 		"metadata": {
-// 			"display_phone_number": "15550315353",
-// 			"phone_number_id": "186646801200517"
-// 		},
-// 		"statuses": [
-// 			{
-// 			"id": "wamid.HBgMOTcxNTU5OTgxODY0FQIAERgSMDVDMzkzREJBQkYxNTQwOTNDAA==",
-// 			"status": "delivered",
-// 			"timestamp": "1716308169",
-// 			"recipient_id": "971559981864",
-// 			"conversation": {
-// 				"id": "158e8778a20f301f0b0382bf9cb4696b",
-// 				"origin": {
-// 					"type": "utility"
-// 				}
+// 			"messaging_product": "whatsapp",
+// 			"metadata": {
+// 				"display_phone_number": "15550315353",
+// 				"phone_number_id": "186646801200517"
 // 			},
-// 			"pricing": {
-// 				"billable": true,
-// 				"pricing_model": "CBP",
-// 				"category": "utility"
-// 			}}
-// 		]
-// 		},
+// 			"statuses": [
+// 			{
+// 				"id": "wamid.HBgMOTcxNTU5OTgxODY0FQIAERgSMDVDMzkzREJBQkYxNTQwOTNDAA==",
+// 				"status": "delivered",
+// 				"timestamp": "1716308169",
+// 				"recipient_id": "971559981864",
+// 				"conversation": {
+// 					"id": "158e8778a20f301f0b0382bf9cb4696b",
+// 					"origin": {
+// 						"type": "utility"
+// 					}
+// 				},
+// 				"pricing": {
+// 					"billable": true,
+// 					"pricing_model": "CBP",
+// 					"category": "utility"
+// 				}
+//			}]
+//		},
 // 		"field": "messages"
-// 	}]
-// }
+//	}]
+//}
 
 // [
 //   {

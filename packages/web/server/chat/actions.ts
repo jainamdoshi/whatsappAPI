@@ -8,8 +8,8 @@ export type Message = {
 	type: 'incoming' | 'outgoing';
 };
 
-export async function getChatContacts(): Promise<Contact[]> {
-	const response = await fetch(`http://localhost:8080/chat/contacts`);
+export async function getChatContacts(senderContactId: number): Promise<Contact[]> {
+	const response = await fetch(`http://localhost:8080/chat/contacts/${senderContactId}`);
 	return await response.json();
 }
 
