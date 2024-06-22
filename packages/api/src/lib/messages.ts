@@ -1,35 +1,48 @@
 import axios from 'axios';
-import { WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_USER_ACCESS_TOKEN } from '../config/init';
+import { WHATSAPP_USER_ACCESS_TOKEN } from '../config/init';
 import { getContacts } from '../model/contacts';
 import { Contact } from '../model/db/schema/contacts';
-import { WhatsAppMessage } from '../model/eventNotification';
+import { SenderContact } from '../model/db/schema/senderContacts';
+import { WhatsAppMessage, WhatsAppMetadataChange } from '../model/eventNotification';
 import { addIncomingMessage } from '../model/messages';
+import { getSenderContacts } from '../model/senderContacts';
 
-export async function sendMessageToContacts(phoneNumbers: string[], templateName: string) {
-	// if (!phoneNumbers.length || !templateName) {
-	// 	return null;
-	// }
-	// const users = await getUsers({
-	// 	filter: {
-	// 		phoneNumber: phoneNumbers
-	// 	}
-	// });
-	// const results = await Promise.all(
-	// 	users.map((user) => {
-	// 		return sendMessage(user, templateName);
-	// 	})
-	// );
-	// return results;
+const url = `https://graph.facebook.com/v19.0/`;
+const requestHeaders = {
+	Authorization: `Bearer ${WHATSAPP_USER_ACCESS_TOKEN}`,
+	'Content-Type': 'application/json'
+};
+
+type MessageRequestBody = {
+	messaging_product: string;
+	to: string;
+	type: string;
+	template?: {
+		name: string;
+		language: {
+			code: string;
+		};
+	};
+	text?: {
+		body: string;
+	};
+};
+
+export async function sendTemplateMessageToContacts(
+	senderContact: SenderContact,
+	contacts: Contact[],
+	templateName: string
+) {
+	const res = await Promise.all(
+		contacts.map((contact) => {
+			return sendTemplateMessage(senderContact, contact, templateName);
+		})
+	);
+
+	return res;
 }
 
-export async function sendTemplateMessage(contact: Contact, templateName: string) {
-	const url = `https://graph.facebook.com/v19.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`;
-
-	const requestHeaders = {
-		Authorization: `Bearer ${WHATSAPP_USER_ACCESS_TOKEN}`,
-		'Content-Type': 'application/json'
-	};
-
+export async function sendTemplateMessage(senderContact: SenderContact, contact: Contact, templateName: string) {
 	const requestBody = {
 		messaging_product: 'whatsapp',
 		to: contact.phoneNumber,
@@ -42,31 +55,49 @@ export async function sendTemplateMessage(contact: Contact, templateName: string
 		}
 	};
 
-	// const requestBody = {
-	// 	messaging_product: 'whatsapp',
-	// 	to: contact.phoneNumber,
-	// 	type: 'text',
-	// 	text: { body: 'This is test message' }
-	// };
+	return await sendMessage(url, senderContact, requestBody, requestHeaders);
+}
 
-	const response = await axios.post(url, requestBody, { headers: requestHeaders });
+export async function sendTextMessage(senderContact: SenderContact, contact: Contact, message: string) {
+	const requestBody = {
+		messaging_product: 'whatsapp',
+		to: contact.phoneNumber,
+		type: 'text',
+		text: { body: message }
+	};
+
+	return await sendMessage(url, senderContact, requestBody, requestHeaders);
+}
+
+async function sendMessage(
+	url: string,
+	senderContact: SenderContact,
+	requestBody: MessageRequestBody,
+	requestHeaders: {
+		Authorization: string;
+		'Content-Type': string;
+	}
+) {
+	const response = await axios.post(url + `${senderContact.whatsAppPhoneNumberId}/messages`, requestBody, {
+		headers: requestHeaders
+	});
 	return response.data;
 }
 
 export async function parseNewIncomingMessage(event: WhatsAppMessage, metadata: WhatsAppMetadataChange) {
 	if (event.type == 'text') {
-		return await addNewTextMessage(event, metadata);
+		return await addNewIncomingTextMessage(event, metadata);
 	}
 }
 
-async function addNewTextMessage(message: WhatsAppMessage, metadata: WhatsAppMetadataChange) {
+async function addNewIncomingTextMessage(message: WhatsAppMessage, metadata: WhatsAppMetadataChange) {
 	const fromContact = await getContacts({
 		filter: {
 			phoneNumber: [message.from]
 		}
 	});
 
-	const toContact = await getSenderContact({
+	const toContact = await getSenderContacts({
 		filter: {
 			phoneNumber: [metadata.displayPhoneNumber]
 		}

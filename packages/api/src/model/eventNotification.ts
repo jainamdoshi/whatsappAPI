@@ -6,6 +6,7 @@ export class WhatsAppEventNotification {
 	entry: WhatsAppEventEntry[];
 
 	constructor(entries: TWhatsAppEventEntry[]) {
+		console.log('New WhatsAppEventNotification', JSON.stringify(entries, null, 2));
 		this.entry = entries.map((entry) => new WhatsAppEventEntry(entry.id, entry.changes));
 	}
 }
@@ -35,7 +36,6 @@ class WhatsAppEventChange {
 	field: string;
 
 	constructor(value: TWhatsAppEventChangeValue, field: string) {
-		console.log('WhatsAppEventChange', value);
 		this.value = new WhatsAppEventChangeValue(value);
 		this.field = field;
 	}
@@ -137,9 +137,7 @@ type TWhatsAppStatus = {
 	status: string;
 	timestamp: string;
 	recipient_id: string;
-	conversation: {
-		id: string;
-	};
+	conversation?: TWhatsAppConversation;
 };
 
 class WhatsAppStatus {
@@ -147,14 +145,39 @@ class WhatsAppStatus {
 	status: string;
 	timestamp: string;
 	recipientId: string;
-	conversationId: string;
+	conversation?: WhatsAppConversation;
 
-	constructor(id: string, status: string, timestamp: string, recipientId: string, conversation: { id: string }) {
+	constructor(
+		id: string,
+		status: string,
+		timestamp: string,
+		recipientId: string,
+		conversation?: TWhatsAppConversation
+	) {
 		this.id = id;
 		this.status = status;
 		this.timestamp = timestamp;
 		this.recipientId = recipientId;
-		this.conversationId = conversation.id;
+		this.conversation = conversation ? new WhatsAppConversation(conversation.id, conversation.origin) : undefined;
+	}
+}
+
+type TWhatsAppConversation = {
+	id: string;
+	origin: {
+		type: string;
+	};
+};
+
+class WhatsAppConversation {
+	id: string;
+	origin: {
+		type: string;
+	};
+
+	constructor(id: string, origin: { type: string }) {
+		this.id = id;
+		this.origin = origin;
 	}
 }
 

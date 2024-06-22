@@ -3,7 +3,7 @@ import { db } from '../config/database';
 import { filterCriteriaBuilder, orderByBuilder, QueryOptions } from '../lib/util';
 import { SenderContact, senderContacts } from './db/schema/senderContacts';
 
-export async function getSenderContact<T extends typeof senderContacts>(options?: QueryOptions<T>) {
+export async function getSenderContacts<T extends typeof senderContacts>(options?: QueryOptions<T>) {
 	let sql;
 
 	if (options?.select) {

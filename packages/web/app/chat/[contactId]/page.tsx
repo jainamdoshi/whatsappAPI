@@ -4,18 +4,19 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ChatContext } from '@/providers/messengerProvider';
-import { getChatMessages, Message } from '@/server/chat/actions';
+import { getChatMessages, Message, sendTextMessage } from '@/server/chat/actions';
 import { getContactById } from '@/server/contact/action';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { SendIcon } from 'lucide-react';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 export default function Chat({ params }: { params: { contactId: string } }) {
-	const socket = useContext(ChatContext);
+	const { socket, senderContactId } = useContext(ChatContext);
+	const [newMessage, setNewMessage] = useState('');
 
 	const messagesQuery = useQuery({
 		queryKey: ['chatContacts', params.contactId],
-		queryFn: () => getChatMessages(parseInt(params.contactId))
+		queryFn: () => getChatMessages(senderContactId, parseInt(params.contactId))
 	});
 
 	const contactQuery = useQuery({
@@ -23,13 +24,16 @@ export default function Chat({ params }: { params: { contactId: string } }) {
 		queryFn: () => getContactById(parseInt(params.contactId))
 	});
 
-	socket?.on(`newIncomingMessages-${params.contactId}`, (message: Message) => {
+	const sendMessage = useMutation({
+		mutationFn: () => sendTextMessage(senderContactId, parseInt(params.contactId), newMessage)
+	});
+
+	socket?.on(`newIncomingMessages-${senderContactId}-${params.contactId}`, (_: Message) => {
 		messagesQuery.refetch();
 	});
 
 	if (!messagesQuery.data || messagesQuery.isLoading || !contactQuery.data || contactQuery.isLoading) return null;
 	if (messagesQuery.isError || contactQuery.isError) return <div>Error</div>;
-
 
 	return (
 		<div className='flex flex-col'>
@@ -55,8 +59,9 @@ export default function Chat({ params }: { params: { contactId: string } }) {
 				<Textarea
 					placeholder='Type your message...'
 					className='h-10 flex-1 resize-none rounded-lg border border-gray-200 bg-gray-100 p-2 text-sm shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-50 dark:focus:border-blue-500 dark:focus:ring-blue-500'
+					onChange={(e) => setNewMessage(e.target.value)}
 				/>
-				<Button size='icon' className='rounded-full'>
+				<Button size='icon' className='rounded-full' onClick={() => sendMessage.mutate()}>
 					<SendIcon className='h-5 w-5' />
 					<span className='sr-only'>Send</span>
 				</Button>

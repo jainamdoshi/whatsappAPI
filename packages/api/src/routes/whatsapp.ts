@@ -1,10 +1,12 @@
 import { Request, Response, Router } from 'express';
 import { WHATSAPP_VERIFY_TOKEN } from '../config/init';
-import { parseNewIncomingMessage, sendMessageToContacts } from '../lib/messages';
+import { parseNewIncomingMessage, sendTemplateMessageToContacts } from '../lib/messages';
 import { IncomingMessage } from '../model/db/schema/incomingMessages';
 import { NewOutgoingMessage } from '../model/db/schema/outgoingMessages';
-import { WhatsAppEventNotification } from '../model/eventNotification';
+import { TWhatsAppEventNotification, WhatsAppEventNotification } from '../model/eventNotification';
 import { io } from '../websocket';
+import { getSenderContacts } from '../model/senderContacts';
+import { getContacts } from '../model/contacts';
 
 const whatsAppRouter = Router();
 
@@ -24,10 +26,9 @@ async function verifyingRequest(req: Request, res: Response) {
 	return res.status(403).send('Forbidden');
 }
 
-async function eventNotification(req: Request<any, any, WhatsAppEventNotification>, res: Response) {
-	const events = req.body;
+async function eventNotification(req: Request<any, any, TWhatsAppEventNotification>, res: Response) {
+	const events = new WhatsAppEventNotification(req.body.entry);
 	const entries = events.entry;
-	console.log(JSON.stringify(entries));
 
 	for (const entry of entries) {
 		for (const change of entry.changes) {
@@ -36,12 +37,20 @@ async function eventNotification(req: Request<any, any, WhatsAppEventNotificatio
 				continue;
 			}
 
+			const metadata = change.value.metadata;
+
 			for (const message of change.value.messages || []) {
-				const newIncomingMessage = (await parseNewIncomingMessage(message)) as IncomingMessage;
-				io.emit(`newIncomingMessages-${newIncomingMessage.fromContactId}`, {
-					...newIncomingMessage,
-					type: 'incoming'
-				});
+				const newIncomingMessage = (await parseNewIncomingMessage(message, metadata)) as IncomingMessage;
+
+				if (newIncomingMessage) {
+					io.emit(
+						`newIncomingMessages-${newIncomingMessage.toContactId}-${newIncomingMessage.fromContactId}`,
+						{
+							...newIncomingMessage,
+							type: 'incoming'
+						}
+					);
+				}
 			}
 		}
 	}
@@ -49,16 +58,27 @@ async function eventNotification(req: Request<any, any, WhatsAppEventNotificatio
 }
 
 async function sendMessage(
-	req: Request<any, any, { phoneNumbers: string[]; templateName: string }>,
+	req: Request<any, any, { senderContactId: string; phoneNumbers: string[]; templateName: string }>,
 	res: Response<NewOutgoingMessage | string>
 ) {
-	const phoneNumbers = req.body.phoneNumbers || [];
-	const templateName = req.body.templateName || '';
+	if (
+		!req.body.senderContactId ||
+		!req.body.phoneNumbers ||
+		!req.body.phoneNumbers.length ||
+		!req.body.templateName
+	) {
+		return res.status(400).send('Invalid request');
+	}
 
-	console.log(phoneNumbers, templateName);
+	const contacts = await Promise.all([
+		getSenderContacts({ filter: { id: [parseInt(req.body.senderContactId)] } }),
+		getContacts({ filter: { id: req.body.phoneNumbers.map((number) => parseInt(number)) } })
+	]);
+
+	const templateName = req.body.templateName;
 
 	try {
-		const result = await sendMessageToContacts(phoneNumbers, templateName);
+		await sendTemplateMessageToContacts(contacts[0][0], contacts[1], templateName);
 	} catch (error) {
 		console.log(error);
 		return res.status(500).send('Error sending message');

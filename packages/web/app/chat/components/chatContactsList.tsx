@@ -8,16 +8,20 @@ import Link from 'next/link';
 import { useContext } from 'react';
 
 export default function ChatContactsList() {
-	const { senderContactId } = useContext(ChatContext);
+	const { socket, senderContactId } = useContext(ChatContext);
 
-	const { data, isError, isLoading } = useQuery({
+	const { data, isError, isLoading, refetch } = useQuery({
 		queryKey: ['chatContacts', senderContactId],
 		queryFn: () => getChatContacts(senderContactId)
 	});
 
 	if (!data || isLoading) return null;
 	if (isError) return <div>Error</div>;
-	
+
+	socket?.on(`newChatContact-${senderContactId}`, () => {
+		refetch();
+	});
+
 	return (
 		<nav className='grid gap-2 py-4'>
 			{data.map((contact) => (
