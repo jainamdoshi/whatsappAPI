@@ -1,9 +1,9 @@
 import { Request, Response, Router } from 'express';
-import { sendTextMessage } from '../lib/messages';
+import { mergeIncomingAndOutgoingMessages, sendTextMessage } from '../lib/messages';
 import { getChatContacts, getContacts } from '../model/contacts';
 import { Contact } from '../model/db/schema/contacts';
 import { OutgoingMessage } from '../model/db/schema/outgoingMessages';
-import { getChatMessages, Message } from '../model/messages';
+import { addOutgoingMessage, getIncomingMessages, getOutgoingMessages, Message } from '../model/messages';
 import { getSenderContacts } from '../model/senderContacts';
 
 const chatRouter = Router();
@@ -23,9 +23,16 @@ async function getMessagesHandler(
 	const senderContactId = parseInt(req.params.senderContactId);
 	const contactId = parseInt(req.params.contactId);
 
-	const messages = await getChatMessages({
+	const incomingMessages = await getIncomingMessages({
 		filter: { fromContactId: [contactId], toContactId: [senderContactId] }
 	});
+
+	const outgoingMessages = await getOutgoingMessages({
+		filter: { fromContactId: [senderContactId], toContactId: [contactId] }
+	});
+
+	const messages = mergeIncomingAndOutgoingMessages(incomingMessages, outgoingMessages);
+
 	return res.status(200).send(messages);
 }
 
@@ -41,19 +48,27 @@ async function sendMessageHandler(
 	const senderContactId = parseInt(req.params.senderContactId);
 	const contactId = parseInt(req.params.contactId);
 
-	const contacts = await Promise.all([
-		getSenderContacts({ filter: { id: [senderContactId] } }),
-		getContacts({ filter: { id: [contactId] } })
-	]);
+	const senderContact = (await getSenderContacts({ filter: { id: [senderContactId] } }))[0];
+	const contact = (await getContacts({ filter: { id: [contactId] } }))[0];
 
-	if (contacts[0].length === 0 || contacts[1].length === 0) {
+	if (!senderContact || !contact) {
 		return res.status(404).send('Contact not found');
 	}
 
 	try {
-		const data = await sendTextMessage(contacts[0][0], contacts[1][0], message);
-		
+		const data = await sendTextMessage(senderContact, contact, message);
 		console.log(data);
+
+		await Promise.all(
+			data.messages.map((m) => {
+				return addOutgoingMessage({
+					whatsAppMessageId: m.id,
+					fromContactId: senderContact.id,
+					toContactId: contact.id,
+					message: message
+				});
+			})
+		);
 	} catch (error) {
 		console.log(error);
 	}

@@ -98,7 +98,7 @@ function OutgoingMessage({ message, timestamp }: { message: string; timestamp: D
 			</div>
 			<Avatar className='h-8 w-8 mt-1'>
 				{/* <AvatarImage src='/placeholder-user.jpg' /> */}
-				<AvatarFallback>CN</AvatarFallback>
+				<AvatarFallback>Y</AvatarFallback>
 			</Avatar>
 		</div>
 	);

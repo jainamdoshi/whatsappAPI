@@ -1,12 +1,11 @@
 import { Request, Response, Router } from 'express';
 import { WHATSAPP_VERIFY_TOKEN } from '../config/init';
-import { parseNewIncomingMessage, sendTemplateMessageToContacts } from '../lib/messages';
-import { IncomingMessage } from '../model/db/schema/incomingMessages';
+import { sendTemplateMessageToContacts } from '../lib/messages';
+import { resolveWhatsAppEventNotification } from '../lib/whatsApp';
+import { getContacts } from '../model/contacts';
 import { NewOutgoingMessage } from '../model/db/schema/outgoingMessages';
 import { TWhatsAppEventNotification, WhatsAppEventNotification } from '../model/eventNotification';
-import { io } from '../websocket';
 import { getSenderContacts } from '../model/senderContacts';
-import { getContacts } from '../model/contacts';
 
 const whatsAppRouter = Router();
 
@@ -30,30 +29,7 @@ async function eventNotification(req: Request<any, any, TWhatsAppEventNotificati
 	const events = new WhatsAppEventNotification(req.body.entry);
 	const entries = events.entry;
 
-	for (const entry of entries) {
-		for (const change of entry.changes) {
-			if (change.field != 'messages') {
-				console.error('Invalid field');
-				continue;
-			}
-
-			const metadata = change.value.metadata;
-
-			for (const message of change.value.messages || []) {
-				const newIncomingMessage = (await parseNewIncomingMessage(message, metadata)) as IncomingMessage;
-
-				if (newIncomingMessage) {
-					io.emit(
-						`newIncomingMessages-${newIncomingMessage.toContactId}-${newIncomingMessage.fromContactId}`,
-						{
-							...newIncomingMessage,
-							type: 'incoming'
-						}
-					);
-				}
-			}
-		}
-	}
+	const result = await resolveWhatsAppEventNotification(entries);
 	return res.status(200).send('EVENT_RECEIVED');
 }
 

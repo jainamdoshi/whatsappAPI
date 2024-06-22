@@ -6,7 +6,7 @@ export class WhatsAppEventNotification {
 	entry: WhatsAppEventEntry[];
 
 	constructor(entries: TWhatsAppEventEntry[]) {
-		console.log('New WhatsAppEventNotification', JSON.stringify(entries, null, 2));
+		console.log('New WhatsAppEventNotification', JSON.stringify(entries));
 		this.entry = entries.map((entry) => new WhatsAppEventEntry(entry.id, entry.changes));
 	}
 }
@@ -16,7 +16,7 @@ type TWhatsAppEventEntry = {
 	changes: TWhatsAppEventChange[];
 };
 
-class WhatsAppEventEntry {
+export class WhatsAppEventEntry {
 	id: string;
 	changes: WhatsAppEventChange[];
 
@@ -118,7 +118,7 @@ type TWhatsAppMessage = {
 
 export class WhatsAppMessage {
 	from: string;
-	timestamp: string;
+	timestamp: Date;
 	text: {
 		body: string;
 	};
@@ -126,37 +126,39 @@ export class WhatsAppMessage {
 
 	constructor(from: string, timestamp: string, text: { body: string }, type: TextType) {
 		this.from = from;
-		this.timestamp = timestamp;
+		this.timestamp = new Date(parseInt(timestamp) * 1000);
 		this.text = text;
 		this.type = type;
 	}
 }
 
+export type TWhatsAppMessageStatus = 'delivered' | 'read' | 'sent' | 'failed';
+
 type TWhatsAppStatus = {
 	id: string;
-	status: string;
+	status: TWhatsAppMessageStatus;
 	timestamp: string;
 	recipient_id: string;
 	conversation?: TWhatsAppConversation;
 };
 
-class WhatsAppStatus {
+export class WhatsAppStatus {
 	id: string;
-	status: string;
-	timestamp: string;
+	status: TWhatsAppMessageStatus;
+	timestamp: Date;
 	recipientId: string;
 	conversation?: WhatsAppConversation;
 
 	constructor(
 		id: string,
-		status: string,
+		status: TWhatsAppMessageStatus,
 		timestamp: string,
 		recipientId: string,
 		conversation?: TWhatsAppConversation
 	) {
 		this.id = id;
 		this.status = status;
-		this.timestamp = timestamp;
+		this.timestamp = new Date(parseInt(timestamp) * 1000);
 		this.recipientId = recipientId;
 		this.conversation = conversation ? new WhatsAppConversation(conversation.id, conversation.origin) : undefined;
 	}
@@ -180,6 +182,14 @@ class WhatsAppConversation {
 		this.origin = origin;
 	}
 }
+
+export type WhatsAppMessageResponse = {
+	messaging_product: string;
+	contacts: { input: string; wa_id: string }[];
+	messages: {
+		id: string;
+	}[];
+};
 
 // {
 // 	"id": "168130179724730",
