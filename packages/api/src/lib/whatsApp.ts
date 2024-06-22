@@ -1,11 +1,12 @@
+import { not } from 'drizzle-orm';
 import {
-    WhatsAppEventEntry,
-    WhatsAppMessage,
-    WhatsAppMetadataChange,
-    WhatsAppStatus
+	WhatsAppEventEntry,
+	WhatsAppMessage,
+	WhatsAppMetadataChange,
+	WhatsAppStatus
 } from '../model/eventNotification';
 import { parseNewIncomingMessage, updateMessage } from './messages';
-import { notifyNewIncomingMessage } from './socketNotifications';
+import { notifyNewChatContact, notifyNewIncomingMessage } from './socketNotifications';
 
 export async function resolveWhatsAppEventNotification(entries: WhatsAppEventEntry[]) {
 	for (const entry of entries) {
@@ -32,12 +33,18 @@ async function resolveIncomingMessages(messages: WhatsAppMessage[], metadata: Wh
 
 		if (newIncomingMessage) {
 			notifyNewIncomingMessage(newIncomingMessage.toContactId, newIncomingMessage.fromContactId);
+			notifyNewChatContact(newIncomingMessage.toContactId);
 		}
 	}
 }
 
 async function resolveOutgoingMessages(messages: WhatsAppStatus[]) {
 	for (const message of messages) {
-		return await updateMessage(message.id, message.status, message.timestamp);
+		const res = await updateMessage(message.id, message.status, message.timestamp);
+
+		if (message.status == 'sent') {
+			notifyNewIncomingMessage(res.fromContactId, res.toContactId);
+			notifyNewChatContact(res.fromContactId);
+		}
 	}
 }

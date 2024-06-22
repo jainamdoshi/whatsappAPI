@@ -32,6 +32,10 @@ export default function Chat({ params }: { params: { contactId: string } }) {
 		messagesQuery.refetch();
 	});
 
+	socket?.on(`newOutgoingMessages-${senderContactId}-${params.contactId}`, (_: Message) => {
+		messagesQuery.refetch();
+	});
+
 	if (!messagesQuery.data || messagesQuery.isLoading || !contactQuery.data || contactQuery.isLoading) return null;
 	if (messagesQuery.isError || contactQuery.isError) return <div>Error</div>;
 
