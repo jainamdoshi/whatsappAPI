@@ -41,6 +41,7 @@ export default function Chat({ params }: { params: { contactId: string } }) {
 
 	return (
 		<div className='flex flex-col'>
+			<div className='font-semibold p-4 w-full bg-slate-200'>{contactQuery.data.name} +{contactQuery.data.phoneNumber}</div>
 			<div className='flex-1 overflow-auto p-4'>
 				{messagesQuery.data.map((message: Message) => {
 					if (message.type == 'incoming') {
