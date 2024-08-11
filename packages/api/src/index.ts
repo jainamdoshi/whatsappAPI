@@ -2,7 +2,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import { createServer } from 'http';
-import { connectDB } from './config/database';
+import {db } from './config/database';
 import { PORT } from './config/init';
 import chatRouter from './routes/chat';
 import contactRouter from './routes/contact';
@@ -27,6 +27,6 @@ app.use('/chat', chatRouter);
 
 server.listen(PORT, async () => {
 	console.log(`Server is running on http://localhost:${PORT}`);
-	await connectDB();
 	initWebSocket();
+	console.log(db);
 });
