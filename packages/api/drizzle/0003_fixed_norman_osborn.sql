@@ -1,1 +1,0 @@
-ALTER TABLE "groups" ADD CONSTRAINT "groups_name_parent_group_id_unique" UNIQUE("name","parent_group_id");

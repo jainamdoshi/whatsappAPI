@@ -1,7 +1,6 @@
 node_modules
 
 *.env
-packages/api/drizzle
 
 next-env.d.ts
 .next

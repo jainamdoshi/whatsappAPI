@@ -1,5 +1,5 @@
-import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { Client } from 'pg';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import { DB_DATABASE, DB_HOST, DB_PASSWORD, DB_PORT, DB_USER } from './init';
 
 export const dbConfig = {
@@ -11,12 +11,5 @@ export const dbConfig = {
 	ssl: false
 };
 
-const clientDB = new Client(dbConfig);
-
-export let db: NodePgDatabase;
-
-export async function connectDB() {
-	await clientDB.connect();
-	db = drizzle(clientDB);
-	console.log('Database connected successfully!');
-}
+const client = postgres(dbConfig);
+export const db = drizzle(client);

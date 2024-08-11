@@ -1,7 +1,102 @@
 {
+  "id": "20a4fdc8-ca58-4cb3-9227-56253c303c2b",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.user_groups": {
+      "name": "user_groups",
+      "schema": "",
+      "columns": {
+        "contact_id": {
+          "name": "contact_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group_id": {
+          "name": "group_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_groups_contact_id_contacts_id_fk": {
+          "name": "user_groups_contact_id_contacts_id_fk",
+          "tableFrom": "user_groups",
+          "tableTo": "contacts",
+          "columnsFrom": [
+            "contact_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "user_groups_group_id_groups_id_fk": {
+          "name": "user_groups_group_id_groups_id_fk",
+          "tableFrom": "user_groups",
+          "tableTo": "groups",
+          "columnsFrom": [
+            "group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_groups_contact_id_group_id_pk": {
+          "name": "user_groups_contact_id_group_id_pk",
+          "columns": [
+            "contact_id",
+            "group_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.contacts": {
+      "name": "contacts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "contacts_phone_number_unique": {
+          "name": "contacts_phone_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "phone_number"
+          ]
+        }
+      }
+    },
     "public.conversations": {
       "name": "conversations",
       "schema": "",
@@ -12,14 +107,14 @@
           "primaryKey": true,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "contact_id": {
+          "name": "contact_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "user_id2": {
-          "name": "user_id2",
+        "contact_id2": {
+          "name": "contact_id2",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -27,35 +122,86 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "conversations_user_id_users_id_fk": {
-          "name": "conversations_user_id_users_id_fk",
+        "conversations_contact_id_contacts_id_fk": {
+          "name": "conversations_contact_id_contacts_id_fk",
           "tableFrom": "conversations",
+          "tableTo": "contacts",
           "columnsFrom": [
-            "user_id"
+            "contact_id"
           ],
-          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
-        "conversations_user_id2_users_id_fk": {
-          "name": "conversations_user_id2_users_id_fk",
+        "conversations_contact_id2_contacts_id_fk": {
+          "name": "conversations_contact_id2_contacts_id_fk",
           "tableFrom": "conversations",
+          "tableTo": "contacts",
           "columnsFrom": [
-            "user_id2"
+            "contact_id2"
           ],
-          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.groups": {
+      "name": "groups",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_group_id": {
+          "name": "parent_group_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "groups_parent_group_id_groups_id_fk": {
+          "name": "groups_parent_group_id_groups_id_fk",
+          "tableFrom": "groups",
+          "tableTo": "groups",
+          "columnsFrom": [
+            "parent_group_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "groups_name_parent_group_id_unique": {
+          "name": "groups_name_parent_group_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name",
+            "parent_group_id"
+          ]
+        }
+      }
     },
     "public.incoming_messages": {
       "name": "incoming_messages",
@@ -67,9 +213,15 @@
           "primaryKey": true,
           "notNull": true
         },
-        "conversation_id": {
-          "name": "conversation_id",
-          "type": "char(32)",
+        "from_contact_id": {
+          "name": "from_contact_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_contact_id": {
+          "name": "to_contact_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -88,18 +240,31 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "incoming_messages_conversation_id_conversations_id_fk": {
-          "name": "incoming_messages_conversation_id_conversations_id_fk",
+        "incoming_messages_from_contact_id_contacts_id_fk": {
+          "name": "incoming_messages_from_contact_id_contacts_id_fk",
           "tableFrom": "incoming_messages",
+          "tableTo": "contacts",
           "columnsFrom": [
-            "conversation_id"
+            "from_contact_id"
           ],
-          "tableTo": "conversations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "incoming_messages_to_contact_id_sender_contacts_id_fk": {
+          "name": "incoming_messages_to_contact_id_sender_contacts_id_fk",
+          "tableFrom": "incoming_messages",
+          "tableTo": "sender_contacts",
+          "columnsFrom": [
+            "to_contact_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -115,9 +280,21 @@
           "primaryKey": true,
           "notNull": true
         },
-        "conversation_id": {
-          "name": "conversation_id",
-          "type": "char(32)",
+        "whatsapp_message_id": {
+          "name": "whatsapp_message_id",
+          "type": "char(58)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from_contact_id": {
+          "name": "from_contact_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_contact_id": {
+          "name": "to_contact_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -125,7 +302,7 @@
           "name": "sent_timestamp",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "delivered_timestamp": {
           "name": "delivered_timestamp",
@@ -139,6 +316,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "failed_timestamp": {
+          "name": "failed_timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "message": {
           "name": "message",
           "type": "json",
@@ -148,25 +331,38 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "outgoing_messages_conversation_id_conversations_id_fk": {
-          "name": "outgoing_messages_conversation_id_conversations_id_fk",
+        "outgoing_messages_from_contact_id_sender_contacts_id_fk": {
+          "name": "outgoing_messages_from_contact_id_sender_contacts_id_fk",
           "tableFrom": "outgoing_messages",
+          "tableTo": "sender_contacts",
           "columnsFrom": [
-            "conversation_id"
+            "from_contact_id"
           ],
-          "tableTo": "conversations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "outgoing_messages_to_contact_id_contacts_id_fk": {
+          "name": "outgoing_messages_to_contact_id_contacts_id_fk",
+          "tableFrom": "outgoing_messages",
+          "tableTo": "contacts",
+          "columnsFrom": [
+            "to_contact_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.users": {
-      "name": "users",
+    "public.sender_contacts": {
+      "name": "sender_contacts",
       "schema": "",
       "columns": {
         "id": {
@@ -177,7 +373,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(100)",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         },
@@ -186,29 +382,105 @@
           "type": "varchar(15)",
           "primaryKey": false,
           "notNull": true
+        },
+        "whatsapp_phone_number_id": {
+          "name": "whatsapp_phone_number_id",
+          "type": "char(15)",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_phone_number_unique": {
-          "name": "users_phone_number_unique",
+        "sender_contacts_whatsapp_phone_number_id_unique": {
+          "name": "sender_contacts_whatsapp_phone_number_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
-            "phone_number"
-          ],
-          "nullsNotDistinct": false
+            "whatsapp_phone_number_id"
+          ]
         }
       }
+    },
+    "public.templates": {
+      "name": "templates",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sender_contact_id": {
+          "name": "sender_contact_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "language": {
+          "name": "language",
+          "type": "language",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "templates_sender_contact_id_sender_contacts_id_fk": {
+          "name": "templates_sender_contact_id_sender_contacts_id_fk",
+          "tableFrom": "templates",
+          "tableTo": "sender_contacts",
+          "columnsFrom": [
+            "sender_contact_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "public.category": {
+      "name": "category",
+      "schema": "public",
+      "values": [
+        "marketing",
+        "utility"
+      ]
+    },
+    "public.language": {
+      "name": "language",
+      "schema": "public",
+      "values": [
+        "en_US"
+      ]
+    }
+  },
   "schemas": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "id": "3f43c1a4-64e1-4d73-8b53-917736997a71",
-  "prevId": "00000000-0000-0000-0000-000000000000"
+    "tables": {}
+  }
 }
