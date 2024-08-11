@@ -1,0 +1,97 @@
+{
+  "version": "6",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1716580131454,
+      "tag": "0000_complete_the_professor",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1716755351555,
+      "tag": "0001_remarkable_punisher",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1717071249670,
+      "tag": "0002_bouncy_mojo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1717075628427,
+      "tag": "0003_fixed_norman_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1717078917278,
+      "tag": "0004_white_jack_murdock",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1717846364777,
+      "tag": "0005_next_swordsman",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1718448351498,
+      "tag": "0006_vengeful_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1718448486198,
+      "tag": "0007_chilly_nextwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1718457134187,
+      "tag": "0008_plain_robin_chapel",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1718799781307,
+      "tag": "0009_flowery_praxagora",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1718978550083,
+      "tag": "0010_productive_sharon_carter",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1719087597317,
+      "tag": "0011_marvelous_santa_claus",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1719089367306,
+      "tag": "0012_graceful_wolverine",
+      "breakpoints": true
+    }
+  ]
+}
