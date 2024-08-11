@@ -5,6 +5,7 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"start": "ts-node src/index.ts",
+		"build": "tsc",
 		"drizzle-migrate": "drizzle-kit migrate",
 		"drizzle-up": "drizzle-kit up",
 		"drizzle-generate": "drizzle-kit generate",
